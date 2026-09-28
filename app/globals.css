@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  background-color: #050805;
+  color: #F0FDF4;
+  overflow-x: hidden;
+  background-image:
+    linear-gradient(rgba(34,197,94,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,197,94,.06) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+::selection { background: rgba(34,197,94,.35); }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #050805; }
+::-webkit-scrollbar-thumb { background: #15803D; border-radius: 6px; }
+
+@layer components {
+  .card { @apply rounded-xl border border-brand/15 bg-ink-2; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition; }
+  .btn-primary { @apply btn bg-brand text-ink-3 hover:bg-brand-600; }
+  .btn-ghost { @apply btn border border-brand/40 text-fg hover:border-brand hover:bg-brand/10; }
+  .nav-link { @apply relative pb-0.5 text-muted transition hover:text-fg after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brand after:transition-all hover:after:w-full; }
+}
+
+.cursor { display: inline-block; width: 8px; height: 1.05em; background: #22C55E; vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+.spark { position: absolute; width: 6px; height: 6px; border-radius: 1px; background: #22C55E; box-shadow: 0 0 10px 2px rgba(34,197,94,.85); }
+
+.soon { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(34,197,94,.45); color: #22C55E; background: linear-gradient(90deg, rgba(34,197,94,.08), rgba(34,197,94,.22), rgba(34,197,94,.08)); background-size: 200% 100%; animation: shimmer 2.4s linear infinite; }
+.soon i { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; animation: pulse 1.2s ease-in-out infinite; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@keyframes pulse { 50% { transform: scale(1.6); opacity: .4; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cursor, .soon, .soon i { animation: none; }
+}
+
+/* Print / Save as PDF: only the resume */
+@media print {
+  body { background: #fff !important; }
+  body * { visibility: hidden; }
+  #resume-print, #resume-print * { visibility: visible; color: #111 !important; }
+  #resume-print { position: absolute; left: 0; top: 0; width: 100%; background: #fff !important; box-shadow: none !important; border: 0 !important; }
+  #resume-print .no-print { display: none !important; }
+}
