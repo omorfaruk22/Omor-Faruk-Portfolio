@@ -8,7 +8,7 @@ export default function SnakeBackground() {
     const layer = ref.current;
     if (!layer || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const made: HTMLSpanElement[] = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 20; i++) {
       const s = document.createElement("span");
       s.className = "spark";
       s.style.top = `${Math.floor((Math.random() * 90) / 4) * 4}%`;
