@@ -7,14 +7,26 @@ import { StatusLabel } from "./StatusDropdown";
 
 export default function Contact() {
   const [f, setF] = useState({ name: "", email: "", subject: "", message: "" });
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value });
 
-  // No backend: opens the visitor's mail app with the message pre-filled.
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const body = `${f.message}\n\nFrom: ${f.name} <${f.email}>`;
-    window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(f.subject)}&body=${encodeURIComponent(body)}`;
+    setStatus("sending");
+    try {
+      const response = await fetch("https://formspree.io/f/mvkkzyja", {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify(f),
+      });
+      if (!response.ok) throw new Error("Form submission failed");
+      setF({ name: "", email: "", subject: "", message: "" });
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
   };
+
   const field = "w-full rounded-lg border border-brand/20 bg-ink-2 px-4 py-3 text-sm outline-none transition focus:border-brand";
 
   return (
@@ -32,7 +44,11 @@ export default function Contact() {
             <input required type="email" placeholder="Email" value={f.email} onChange={set("email")} className={field} />
             <input placeholder="Subject" value={f.subject} onChange={set("subject")} className={field} />
             <textarea required rows={5} placeholder="Message" value={f.message} onChange={set("message")} className={field} />
-            <button type="submit" className="btn-primary w-full font-mono sm:w-auto">./send-message</button>
+            <button type="submit" disabled={status === "sending"} className="btn-primary w-full font-mono disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">{status === "sending" ? "./sending..." : "./send-message"}</button>
+            <p className={`min-h-5 text-sm ${status === "success" ? "text-brand" : status === "error" ? "text-red-400" : "text-muted"}`} aria-live="polite">
+              {status === "success" && "Message sent successfully. Thank you!"}
+              {status === "error" && "Message could not be sent. Please email me directly."}
+            </p>
           </form>
         </Reveal>
       </div>
