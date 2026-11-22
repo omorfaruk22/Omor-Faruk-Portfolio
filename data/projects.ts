@@ -5,6 +5,7 @@ export type Project = {
   image: string;
   technologies: string[];
   github: string;
+  serverGithub?: string;
   live: string;
   category: string;
   highlights: string[];
@@ -14,6 +15,59 @@ export type Project = {
 
 // Replace image, github and live placeholders with your own project assets and URLs.
 export const projects: Project[] = [
+  {
+    slug: 'salonbook',
+    title: 'SalonBook',
+    description:
+      'A full-stack salon booking platform where customers discover services, book appointments and track payments, while administrators manage salon operations.',
+    image: '/projects/salonbook.png',
+    technologies: ['Next.js', 'React', 'TypeScript', 'Node.js', 'Express', 'MongoDB', 'Better Auth', 'Stripe', 'ImgBB'],
+    github: 'https://github.com/omorfaruk22/Salon-book-client',
+    serverGithub: 'https://github.com/omorfaruk22/Salon-book-server',
+    live: 'https://salon-book-client-8wvq.vercel.app/',
+    category: 'Full Stack',
+    highlights: [
+      'Built a responsive customer experience for browsing, searching, filtering and sorting salon services.',
+      'Added appointment booking and management, plus customer and administrator dashboards.',
+      'Created admin tools for managing services, customers, appointments and transactions.',
+      'Integrated email/password and Google authentication with Better Auth.',
+      'Integrated Stripe Checkout with webhook-based payment status updates and MongoDB-backed data storage.',
+    ],
+    challenges: [
+      'Coordinating appointment and payment state across customer and admin workflows.',
+      'Designing a consistent booking experience across desktop and mobile screens.',
+    ],
+    improvements: [
+      'Add a live demo link when one is available.',
+      'Expand appointment notifications and reporting for salon administrators.',
+    ],
+  },
+  {
+    slug: 'studio-space',
+    title: 'StudioSpace',
+    description:
+      'A peer-to-peer marketplace for discovering, booking and sharing creative workspaces, with tools for both studio hosts and customers.',
+    image: '/projects/studiospace.png',
+    technologies: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Express', 'Better Auth', 'MongoDB', 'Mongoose', 'Vercel', 'Render'],
+    github: 'https://github.com/omorfaruk22/Studio-Space',
+    live: 'https://studio-space-phi.vercel.app/',
+    category: 'Full Stack',
+    highlights: [
+      'Built studio discovery with search, location, category, price, capacity, amenities and sorting filters.',
+      'Added email/password and Google sign-in, protected host and customer areas, and host listing management.',
+      'Implemented booking requests, availability, cancellation, host decisions and overlap protection for confirmed bookings.',
+      'Integrated SSLCommerz hosted checkout with server-side transaction validation.',
+      'Added wishlists, downloadable booking summaries, theme switching and responsive loading, empty and error states.',
+    ],
+    challenges: [
+      'Preventing overlapping confirmed bookings while coordinating booking requests and host decisions.',
+      'Connecting client and API authentication, checkout validation and MongoDB data across separate deployments.',
+    ],
+    improvements: [
+      'Configure SMTP settings to enable booking and payment email delivery.',
+      'Connect newsletter signups to an email campaign service and add more studio imagery.',
+    ],
+  },
   {
     slug: 'bazardor',
     title: 'BazarDor',

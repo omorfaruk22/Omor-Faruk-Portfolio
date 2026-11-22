@@ -22,7 +22,6 @@ export default function ProjectDetailsPage({
   const project = projects.find(item => item.slug === params.slug);
   if (!project) notFound();
   const githubPlaceholder = isPlaceholderUrl(project.github);
-  const livePlaceholder = isPlaceholderUrl(project.live);
   return (
     <main className="relative z-10 min-h-screen">
       <Section id="project-details" title={project.title}>
@@ -35,11 +34,10 @@ export default function ProjectDetailsPage({
         <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <div>
             <div className="card overflow-hidden border-brand/20">
-              {/* Replace this placeholder cover with a screenshot by changing image in data/projects.ts. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={project.image}
-                alt={`${project.title} preview placeholder`}
+                alt={`${project.title} project showcase`}
                 className="aspect-[16/9] w-full object-cover"
               />
             </div>
@@ -86,17 +84,20 @@ export default function ProjectDetailsPage({
                 ))}
               </div>
               <div className="mt-6 grid gap-3">
-                <a
-                  href={project.live}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn-primary w-full"
-                >
-                  {livePlaceholder
-                    ? 'Live demo placeholder'
-                    : 'View live project'}
-                  <ArrowUpRight size={16} />
-                </a>
+                {project.live ? (
+                  <a
+                    href={project.live}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-primary w-full"
+                  >
+                    View live project <ArrowUpRight size={16} />
+                  </a>
+                ) : (
+                  <span className="btn-ghost w-full cursor-default">
+                    Live demo not available
+                  </span>
+                )}
                 <a
                   href={project.github}
                   target="_blank"
@@ -108,8 +109,18 @@ export default function ProjectDetailsPage({
                     : 'Client GitHub repository'}
                   <ArrowUpRight size={16} />
                 </a>
+                {project.serverGithub && (
+                  <a
+                    href={project.serverGithub}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn-ghost w-full"
+                  >
+                    Server GitHub repository <ArrowUpRight size={16} />
+                  </a>
+                )}
               </div>
-              {(livePlaceholder || githubPlaceholder) && (
+              {githubPlaceholder && (
                 <p className="mt-3 text-xs leading-relaxed text-muted">
                   Replace the example URLs in{' '}
                   <code className="text-brand">data/projects.ts</code> with your

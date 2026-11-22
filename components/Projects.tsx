@@ -58,11 +58,10 @@ export default function Projects() {
                 className="relative block overflow-hidden"
                 aria-label={`View ${p.title} project details`}
               >
-                {/* Placeholder artwork lives in public/projects; replace it with your own screenshot when ready. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={p.image}
-                  alt={`${p.title} project preview placeholder`}
+                  alt={`${p.title} project showcase`}
                   className="h-48 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                 />
                 <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/60 px-3 py-1 font-mono text-[11px] text-white backdrop-blur">
@@ -120,20 +119,18 @@ export default function Projects() {
                     >
                       <Github size={17} />
                     </a>
-                    <a
-                      href={p.live}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`Live demo for ${p.title}${isPlaceholderUrl(p.live) ? ' (placeholder link)' : ''}`}
-                      title={
-                        isPlaceholderUrl(p.live)
-                          ? 'Replace with your live project URL'
-                          : 'Open live project'
-                      }
-                      className="text-muted transition hover:text-brand"
-                    >
-                      <ExternalLink size={17} />
-                    </a>
+                    {p.live && (
+                      <a
+                        href={p.live}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Live demo for ${p.title}`}
+                        title="Open live project"
+                        className="text-muted transition hover:text-brand"
+                      >
+                        <ExternalLink size={17} />
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
