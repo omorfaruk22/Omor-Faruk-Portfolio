@@ -12,10 +12,12 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import SnakeBackground from "@/components/SnakeBackground";
 import ResumeModal from "@/components/ResumeModal";
+import ScrollProgress from "@/components/ScrollProgress";
 
 export default function Home() {
   return (
     <>
+      <ScrollProgress />
       <SnakeBackground />
       <Navbar />
       <main className="relative z-10">

@@ -6,7 +6,7 @@ export const profile = {
   tagline:
     "I build modern, scalable and user-focused web applications while continuously exploring new technologies and improving my craft.",
   email: "omorfaruk22571@gmail.com",
-  phones: ["01776664368", "01570276657"],
+  phones: ["+8801776664368", "+8801570276657"],
   location: "Cox's Bazar, Bangladesh",
   permanentAddress: "Bogura, Mokamtola, Daridaha, Mohabbot Nodipur, Bangladesh",
   photo: "/profile.jpg",
@@ -24,7 +24,7 @@ export const profile = {
   education: [
     { title: "SSC", place: "", period: "", note: "Completed", current: false },
     {
-      title: "Diploma in Computer Science & Technology",
+      title: "Diploma in Engineering Computer Science & Technology",
       place: "Cox's Bazar Polytechnic Institute",
       period: "Session 2023–2024 · Expected completion 2028",
       note: "Currently studying",

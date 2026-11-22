@@ -1,7 +1,7 @@
 'use client';
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, Github, ExternalLink, Layers3 } from 'lucide-react';
+import { ArrowUpRight, Github, ExternalLink, Layers3, Search, X } from 'lucide-react';
 import Section from './Section';
 import Reveal from './Reveal';
 import { isPlaceholderUrl, projects } from '@/data/projects';
@@ -12,7 +12,12 @@ export default function Projects() {
     [],
   );
   const [cat, setCat] = useState('All');
-  const shown = projects.filter(p => cat === 'All' || p.category === cat);
+  const [query, setQuery] = useState('');
+  const shown = projects.filter(p => {
+    const matchesCategory = cat === 'All' || p.category === cat;
+    const searchable = [p.title, p.description, p.category, ...p.technologies].join(' ').toLowerCase();
+    return matchesCategory && searchable.includes(query.trim().toLowerCase());
+  });
 
   return (
     <Section
@@ -20,7 +25,7 @@ export default function Projects() {
       title="Featured Projects"
       badge={
         <span className="rounded-full border border-brand/25 px-3 py-1 font-mono text-xs text-muted">
-          {projects.length} projects
+          {shown.length} of {projects.length} projects
         </span>
       }
     >
@@ -29,6 +34,22 @@ export default function Projects() {
         technology stack, implementation highlights, challenges and future
         plans.
       </Reveal>
+      <label className="relative mb-4 block max-w-lg">
+        <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
+        <input
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search projects or technologies..."
+          aria-label="Search projects or technologies"
+          className="w-full rounded-full border border-brand/25 bg-ink-2 py-3 pl-11 pr-11 text-sm text-fg outline-none transition placeholder:text-muted focus:border-brand focus:ring-2 focus:ring-brand/20"
+        />
+        {query && (
+          <button type="button" onClick={() => setQuery('')} aria-label="Clear project search" className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted hover:text-fg">
+            <X size={16} />
+          </button>
+        )}
+      </label>
       <div className="mb-7 flex flex-wrap gap-2" aria-label="Filter projects">
         {cats.map(c => (
           <button
@@ -41,7 +62,12 @@ export default function Projects() {
           </button>
         ))}
       </div>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {shown.length === 0 ? (
+        <div className="card border-dashed p-10 text-center text-sm text-muted">
+          No projects match that search. Try another name or technology.
+        </div>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
           {shown.map((p, index) => (
             <motion.article
@@ -137,7 +163,8 @@ export default function Projects() {
             </motion.article>
           ))}
         </AnimatePresence>
-      </div>
+        </div>
+      )}
     </Section>
   );
 }
