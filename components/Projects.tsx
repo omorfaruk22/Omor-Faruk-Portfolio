@@ -77,7 +77,7 @@ export default function Projects() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 12 }}
               transition={{ duration: 0.22, delay: index * 0.035 }}
-              className="group card flex h-full flex-col overflow-hidden border-brand/15 transition hover:-translate-y-1 hover:border-brand/50 hover:shadow-glow"
+              className={`group card flex h-full flex-col overflow-hidden border-brand/15 transition hover:-translate-y-1 hover:border-brand/50 hover:shadow-glow ${index === 0 ? "lg:col-span-2" : ""}`}
             >
               <a
                 href={`/projects/${p.slug}`}
@@ -88,8 +88,9 @@ export default function Projects() {
                 <img
                   src={p.image}
                   alt={`${p.title} project showcase`}
-                  className="h-48 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  className={`${index === 0 ? "h-56 sm:h-72" : "h-48"} w-full object-cover transition duration-500 group-hover:scale-[1.03]`}
                 />
+                {index === 0 && <span className="absolute right-4 top-4 rounded-full border border-brand/40 bg-brand px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-ink-3">Featured</span>}
                 <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/60 px-3 py-1 font-mono text-[11px] text-white backdrop-blur">
                   {p.category}
                 </span>
