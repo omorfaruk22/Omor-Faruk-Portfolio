@@ -146,7 +146,7 @@ export const projects: Project[] = [
       'Auth.js',
     ],
     github: 'https://github.com/omorfaruk22/library-management-system',
-    live: 'https://library-management-system.vercel.app/',
+    live: 'https://library-management-system-umber-nine.vercel.app/',
     category: 'Full Stack',
     highlights: [
       'Built as a full-stack application with the Next.js App Router.',
