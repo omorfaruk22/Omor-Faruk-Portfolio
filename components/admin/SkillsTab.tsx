@@ -68,7 +68,7 @@ export default function SkillsTab({
 
   return (
     <div className="space-y-6">
-      <div className="card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
+      <div className="glass-card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
         <div>
           <h2 className="flex items-center gap-2 text-lg font-bold text-fg">
             <Code2 size={18} className="text-brand" /> Skills Manager
@@ -89,7 +89,7 @@ export default function SkillsTab({
       </div>
 
       {/* Add new skill group */}
-      <div className="card p-5">
+      <div className="glass-card p-5">
         <label className={labelCls}>Add New Skill Category</label>
         <div className="flex flex-col gap-2.5 sm:flex-row">
           <input
@@ -118,7 +118,7 @@ export default function SkillsTab({
       {/* Groups */}
       <div className="space-y-4">
         {groups.map((group, idx) => (
-          <div key={group.id} className="card border-brand/20 p-5">
+          <div key={group.id} className="glass-card border-brand/20 p-5">
             <div className="flex flex-wrap items-center gap-2">
               <input
                 type="text"

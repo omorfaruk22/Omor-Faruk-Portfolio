@@ -38,17 +38,17 @@ export default function Contact() {
 
   return (
     <Section id="contact" title="Let's Build Something Together.">
-      <div className="grid gap-10 md:grid-cols-2">
-        <Reveal className="space-y-3 font-mono text-sm">
+      <div className="grid w-full min-w-0 gap-8 md:grid-cols-2 md:gap-10">
+        <Reveal className="min-w-0 space-y-3 break-words font-mono text-sm">
           <StatusLabel />
-          <p>
+          <p className="break-words">
             <span className="text-brand">email</span> —{" "}
             <a href={`mailto:${profile.email}`} className="break-all hover:underline">
               {profile.email}
             </a>
           </p>
           {profile.phones.length > 0 && (
-            <p>
+            <p className="break-words">
               <span className="text-brand">phone</span> —{" "}
               {profile.phones.map((p, i) => (
                 <span key={p}>
@@ -60,11 +60,11 @@ export default function Contact() {
               ))}
             </p>
           )}
-          <p>
+          <p className="break-words">
             <span className="text-brand">location</span> — {profile.location}
           </p>
         </Reveal>
-        <Reveal>
+        <Reveal className="min-w-0">
           <form onSubmit={submit} className="space-y-3">
             <input required placeholder="Name" value={f.name} onChange={set("name")} className={field} />
             <input

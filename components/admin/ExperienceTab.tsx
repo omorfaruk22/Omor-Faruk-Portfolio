@@ -104,7 +104,7 @@ export default function ExperienceTab({
 
   return (
     <div className="space-y-6">
-      <div className="card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
+      <div className="glass-card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="flex items-center gap-2 text-lg font-bold text-fg">
@@ -128,7 +128,7 @@ export default function ExperienceTab({
       </div>
 
       {editing && (
-        <form onSubmit={handleSave} className="card border-brand/40 p-6 shadow-glow">
+        <form onSubmit={handleSave} className="glass-card border-brand/40 p-6 shadow-glow">
           <div className="flex items-center justify-between border-b border-brand/15 pb-4">
             <h3 className="text-base font-bold text-fg">
               {editing.id ? "Edit Experience" : "New Experience Entry"}
@@ -240,7 +240,7 @@ export default function ExperienceTab({
       )}
 
       {data.experience.length === 0 ? (
-        <div className="card border-dashed p-10 text-center">
+        <div className="glass-card border-dashed p-10 text-center">
           <Briefcase size={30} className="mx-auto text-brand/70" />
           <h3 className="mt-3 text-base font-semibold text-fg">No experience added yet</h3>
           <p className="mx-auto mt-1 max-w-md text-xs text-muted">
@@ -257,7 +257,7 @@ export default function ExperienceTab({
       ) : (
         <div className="space-y-4">
           {data.experience.map((exp, index) => (
-            <div key={exp.id} className="card border-brand/20 p-5">
+            <div key={exp.id} className="glass-card border-brand/20 p-5">
               <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">

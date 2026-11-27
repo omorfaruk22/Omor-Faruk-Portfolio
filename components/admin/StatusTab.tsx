@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Activity, Check, Loader2, Pencil, Plus, Save, Trash2, X } from "lucide-react";
+import { Activity, Check, Code2, Eye, Loader2, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import { slugify } from "@/lib/default-data";
 import { StatusDot } from "@/components/StatusDropdown";
 import { adminFetch } from "./api";
@@ -8,15 +8,15 @@ import { ConfirmModal, inputCls, labelCls } from "./ui";
 import type { AvailabilityOption, PortfolioData } from "@/types/portfolio";
 
 const COLOR_PRESETS = [
-  "#22C55E", // Emerald Green
-  "#10B981", // Teal Green
-  "#38BDF8", // Sky Blue
-  "#EAB308", // Amber Yellow
-  "#F97316", // Orange
-  "#EC4899", // Pink
-  "#A855F7", // Purple
-  "#6B7280", // Neutral Gray
-  "#EF4444", // Red
+  "#22C55E",
+  "#10B981",
+  "#38BDF8",
+  "#EAB308",
+  "#F97316",
+  "#EC4899",
+  "#A855F7",
+  "#6B7280",
+  "#EF4444",
 ];
 
 type StatusDraft = {
@@ -52,7 +52,6 @@ export default function StatusTab({
   const [codeTouched, setCodeTouched] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<AvailabilityOption | null>(null);
 
-  // Also allow editing the Hero's "CURRENTLY" status headline directly here
   const [heroStatus, setHeroStatus] = useState(data.profile.status);
   const [heroSubtitle, setHeroSubtitle] = useState(data.profile.statusSubtitle);
   const [heroBadge, setHeroBadge] = useState(data.profile.heroBadge);
@@ -73,6 +72,19 @@ export default function StatusTab({
       onConsumeOpenNew?.();
     }
   }, [initialOpenNew, onConsumeOpenNew]);
+
+  const activeOption =
+    data.availability.options.find((o) => o.id === data.availability.status) ??
+    data.availability.options[0];
+
+  const previewStatus = editing
+    ? {
+        label: editing.label || "Custom Status",
+        code: editing.code || "custom_status",
+        color: editing.color,
+        note: editing.note,
+      }
+    : activeOption;
 
   const setActiveStatus = async (statusId: string) => {
     setSaving(true);
@@ -206,7 +218,7 @@ export default function StatusTab({
         }),
       });
       onDataChange(updated);
-      onNotify("success", "Updated hero current status & badges.");
+      onNotify("success", "Updated hero status & badges!");
     } catch (err) {
       onNotify("error", err instanceof Error ? err.message : "Failed to update hero status.");
     } finally {
@@ -217,13 +229,13 @@ export default function StatusTab({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
+      <div className="glass-card flex flex-col justify-between gap-4 border-brand/30 p-5 sm:flex-row sm:items-center">
         <div>
           <h2 className="flex items-center gap-2 text-lg font-bold text-fg">
-            <Activity size={18} className="text-brand" /> Availability &amp; Live Status
+            <Activity size={18} className="text-brand" /> Live Status Studio
           </h2>
           <p className="mt-1 text-xs text-muted">
-            Switch your live availability status or add new custom statuses — updates Navbar, Hero, About, Terminal, CodeEditor &amp; Contact.
+            Switch active status or design custom status badges — updates across Navbar, Hero, About, Terminal, CodeEditor &amp; Contact.
           </p>
         </div>
         <button
@@ -232,18 +244,77 @@ export default function StatusTab({
             setEditing(emptyStatus());
             setCodeTouched(false);
           }}
-          className="btn-primary shrink-0 font-mono !text-xs"
+          className="btn-primary shrink-0 !rounded-xl font-mono !text-xs shadow-glow"
         >
-          <Plus size={16} /> Add Status
+          <Plus size={16} /> Add Custom Status
         </button>
+      </div>
+
+      {/* Live Preview Stage */}
+      <div className="glass-card overflow-hidden border-brand/25 p-5 sm:p-6">
+        <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-brand">
+          <Eye size={13} /> Live Portfolio Preview {editing ? "(Drafting)" : "(Active)"}
+        </div>
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          {/* Navbar + Hero Badge preview */}
+          <div className="rounded-xl border border-brand/15 bg-ink p-4">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-muted">
+              Navbar &amp; Hero Badges
+            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2.5">
+              <span className="inline-flex items-center gap-2 rounded-full border border-brand/25 bg-ink-2 px-3 py-1.5 font-mono text-xs text-fg">
+                <StatusDot color={previewStatus?.color ?? "#22C55E"} />
+                {previewStatus?.label}
+              </span>
+              <span className="inline-flex items-center gap-2 rounded-lg border border-brand/20 bg-ink-2 px-3 py-1.5 font-mono text-xs text-muted">
+                <StatusDot color={previewStatus?.color ?? "#22C55E"} />
+                <span className="text-fg">{previewStatus?.label}</span>
+                <span className="text-brand">/</span>
+                <span>{previewStatus?.code}</span>
+              </span>
+            </div>
+            {previewStatus?.note && (
+              <p className="mt-3 text-xs leading-relaxed text-muted">{previewStatus.note}</p>
+            )}
+          </div>
+
+          {/* Hero CURRENTLY card preview */}
+          <div className="rounded-xl border border-brand/15 bg-ink p-4">
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/20 bg-ink-2 px-2.5 py-0.5 font-mono text-[10px] uppercase text-muted">
+                <Code2 size={11} className="text-brand" /> {heroBadge || "Full stack developer"}
+              </span>
+              <span className="rounded-full border border-brand/20 bg-brand/10 px-2.5 py-0.5 font-mono text-[10px] text-brand">
+                {portfolioVersion || "PORTFOLIO v1.0"}
+              </span>
+            </div>
+            <div className="mt-3 flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={data.profile.photo}
+                alt={data.profile.name}
+                className="h-11 w-11 shrink-0 rounded-xl border border-brand/30 object-cover"
+              />
+              <div className="min-w-0">
+                <p className="font-mono text-[10px] text-muted">CURRENTLY</p>
+                <p className="truncate text-sm font-semibold text-fg">
+                  {heroStatus || "Computer Science & Technology Student"}
+                </p>
+                <p className="truncate text-xs text-muted">
+                  {heroSubtitle || "Learning by building real projects"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Add / Edit Status Form */}
       {editing && (
-        <form onSubmit={handleSaveOption} className="card border-brand/40 p-6 shadow-glow">
+        <form onSubmit={handleSaveOption} className="glass-card border-brand/45 p-6 shadow-glow">
           <div className="flex items-center justify-between border-b border-brand/15 pb-4">
             <h3 className="text-base font-bold text-fg">
-              {editing.originalId ? "Edit Status Option" : "Add New Custom Status"}
+              {editing.originalId ? "Edit Status Option" : "Create New Custom Status"}
             </h3>
             <button
               type="button"
@@ -292,8 +363,8 @@ export default function StatusTab({
               />
             </div>
 
-            <div>
-              <label className={labelCls}>Indicator Color</label>
+            <div className="md:col-span-2">
+              <label className={labelCls}>Indicator Glow Color</label>
               <div className="flex flex-wrap items-center gap-2">
                 {COLOR_PRESETS.map((hex) => (
                   <button
@@ -306,7 +377,7 @@ export default function StatusTab({
                         ? "scale-110 border-white"
                         : "border-transparent opacity-80 hover:opacity-100"
                     }`}
-                    style={{ background: hex }}
+                    style={{ background: hex, boxShadow: `0 0 12px ${hex}66` }}
                   />
                 ))}
                 <input
@@ -317,16 +388,6 @@ export default function StatusTab({
                   }
                   className="h-8 w-10 cursor-pointer rounded border border-brand/25 bg-ink p-0.5"
                 />
-              </div>
-            </div>
-
-            <div>
-              <label className={labelCls}>Preview</label>
-              <div className="inline-flex items-center gap-2 rounded-lg border border-brand/25 bg-ink px-3.5 py-2.5 font-mono text-xs text-muted">
-                <StatusDot color={editing.color} />
-                <span className="text-fg">{editing.label || "Status Label"}</span>
-                <span className="text-brand">/</span>
-                <span>{editing.code || "status_code"}</span>
               </div>
             </div>
 
@@ -348,11 +409,15 @@ export default function StatusTab({
             <button
               type="button"
               onClick={() => setEditing(null)}
-              className="btn-ghost !px-4 !py-2"
+              className="btn-ghost !rounded-xl !px-4 !py-2"
             >
               Cancel
             </button>
-            <button type="submit" disabled={saving} className="btn-primary !px-5 !py-2 font-mono">
+            <button
+              type="submit"
+              disabled={saving}
+              className="btn-primary !rounded-xl !px-5 !py-2 font-mono shadow-glow"
+            >
               {saving ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
               {editing.originalId ? "Save Status" : "Add & Activate"}
             </button>
@@ -367,21 +432,21 @@ export default function StatusTab({
           return (
             <div
               key={opt.id}
-              className={`card flex flex-col justify-between gap-4 p-5 transition ${
-                isActive ? "border-brand bg-brand/[0.06] shadow-glow" : "border-brand/20"
+              className={`glass-card flex flex-col justify-between gap-4 p-5 transition ${
+                isActive ? "border-brand bg-brand/[0.08] shadow-glow" : "border-brand/20"
               }`}
             >
               <div>
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex min-w-0 items-center gap-2.5">
                     <StatusDot color={opt.color} />
-                    <div>
-                      <h3 className="text-base font-bold text-fg">{opt.label}</h3>
-                      <p className="font-mono text-xs text-muted">{opt.code}</p>
+                    <div className="min-w-0">
+                      <h3 className="truncate text-base font-bold text-fg">{opt.label}</h3>
+                      <p className="truncate font-mono text-xs text-muted">{opt.code}</p>
                     </div>
                   </div>
                   {isActive && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-brand px-2.5 py-1 font-mono text-[10px] font-bold uppercase text-ink-3">
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-brand px-2.5 py-1 font-mono text-[10px] font-bold uppercase text-ink-3">
                       <Check size={12} /> Active
                     </span>
                   )}
@@ -396,7 +461,7 @@ export default function StatusTab({
                   type="button"
                   disabled={saving || isActive}
                   onClick={() => setActiveStatus(opt.id)}
-                  className={`rounded-md px-3 py-1.5 font-mono text-xs font-semibold transition ${
+                  className={`rounded-lg px-3.5 py-1.5 font-mono text-xs font-semibold transition ${
                     isActive
                       ? "cursor-default bg-brand/15 text-brand"
                       : "bg-brand text-ink-3 hover:bg-brand-600"
@@ -418,7 +483,7 @@ export default function StatusTab({
                       setCodeTouched(true);
                     }}
                     title="Edit status"
-                    className="rounded-md border border-brand/20 bg-ink p-2 text-muted hover:border-brand hover:text-fg"
+                    className="rounded-lg border border-brand/20 bg-ink p-2 text-muted hover:border-brand hover:text-fg"
                   >
                     <Pencil size={14} />
                   </button>
@@ -427,7 +492,7 @@ export default function StatusTab({
                     disabled={data.availability.options.length <= 1}
                     onClick={() => setDeleteTarget(opt)}
                     title="Delete status"
-                    className="rounded-md border border-red-500/25 bg-red-500/5 p-2 text-red-400 hover:border-red-400 disabled:opacity-30"
+                    className="rounded-lg border border-red-500/25 bg-red-500/5 p-2 text-red-400 hover:border-red-400 disabled:opacity-30"
                   >
                     <Trash2 size={14} />
                   </button>
@@ -438,11 +503,11 @@ export default function StatusTab({
         })}
       </div>
 
-      {/* Hero "CURRENTLY" Headline Status */}
-      <form onSubmit={saveHeroStatus} className="card p-6">
+      {/* Hero Headline Editor */}
+      <form onSubmit={saveHeroStatus} className="glass-card p-6">
         <h3 className="text-base font-bold text-fg">Hero &amp; Profile Status Headline</h3>
         <p className="mt-0.5 text-xs text-muted">
-          Shown in the Hero &quot;CURRENTLY&quot; card, Footer, Resume, and Terminal.
+          Updates live in the preview above and across your Hero, Footer, Resume, and Terminal.
         </p>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           <div>
@@ -487,7 +552,11 @@ export default function StatusTab({
           </div>
         </div>
         <div className="mt-5 flex justify-end">
-          <button type="submit" disabled={savingHero} className="btn-primary !px-5 !py-2.5 font-mono">
+          <button
+            type="submit"
+            disabled={savingHero}
+            className="btn-primary !rounded-xl !px-5 !py-2.5 font-mono shadow-glow"
+          >
             {savingHero ? <Loader2 size={15} className="animate-spin" /> : <Save size={15} />}
             Save Headline Status
           </button>

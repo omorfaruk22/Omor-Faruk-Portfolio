@@ -50,7 +50,7 @@ export default function ProfileTab({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
+      <div className="glass-card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
         <div>
           <h2 className="flex items-center gap-2 text-lg font-bold text-fg">
             <User size={18} className="text-brand" /> Profile, Bio &amp; Contact Info
@@ -66,7 +66,7 @@ export default function ProfileTab({
       </div>
 
       {/* Identity & Hero */}
-      <div className="card p-6">
+      <div className="glass-card p-6">
         <h3 className="font-mono text-xs uppercase tracking-wider text-brand">
           Identity &amp; Hero Content
         </h3>
@@ -140,7 +140,7 @@ export default function ProfileTab({
       </div>
 
       {/* Media: Profile Photo & Resume */}
-      <div className="card p-6">
+      <div className="glass-card p-6">
         <h3 className="font-mono text-xs uppercase tracking-wider text-brand">
           Profile Photo &amp; Resume PDF
         </h3>
@@ -168,7 +168,7 @@ export default function ProfileTab({
       </div>
 
       {/* About Bio */}
-      <div className="card p-6">
+      <div className="glass-card p-6">
         <h3 className="font-mono text-xs uppercase tracking-wider text-brand">
           About Bio Paragraphs
         </h3>
@@ -187,7 +187,7 @@ export default function ProfileTab({
       </div>
 
       {/* Contact, GitHub & SEO */}
-      <div className="card p-6">
+      <div className="glass-card p-6">
         <h3 className="font-mono text-xs uppercase tracking-wider text-brand">
           Contact Details, GitHub &amp; SEO
         </h3>

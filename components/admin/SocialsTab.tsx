@@ -81,7 +81,7 @@ export default function SocialsTab({
 
   return (
     <div className="space-y-6">
-      <div className="card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
+      <div className="glass-card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
         <div>
           <h2 className="flex items-center gap-2 text-lg font-bold text-fg">
             <Share2 size={18} className="text-brand" /> Social Links Manager
@@ -108,7 +108,7 @@ export default function SocialsTab({
 
       <div className="space-y-4">
         {items.map((social, idx) => (
-          <div key={social.id} className="card border-brand/20 p-5">
+          <div key={social.id} className="glass-card border-brand/20 p-5">
             <div className="flex items-center justify-between gap-2 border-b border-brand/10 pb-3">
               <span className="font-mono text-xs text-brand">
                 {social.label || `Link #${idx + 1}`}

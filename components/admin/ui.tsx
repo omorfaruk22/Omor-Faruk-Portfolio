@@ -16,11 +16,11 @@ import {
 import { adminFetch } from "./api";
 
 export const inputCls =
-  "w-full rounded-lg border border-brand/20 bg-ink px-3.5 py-2.5 text-sm text-fg outline-none transition placeholder:text-muted/60 focus:border-brand focus:ring-2 focus:ring-brand/20";
+  "w-full min-w-0 rounded-xl border border-brand/20 bg-ink px-3.5 py-2.5 text-sm text-fg outline-none transition placeholder:text-muted/60 focus:border-brand focus:ring-2 focus:ring-brand/20";
 
 export const textareaCls = `${inputCls} min-h-[96px] resize-y leading-relaxed`;
 
-export const labelCls = "mb-1.5 block font-mono text-xs uppercase tracking-wider text-muted";
+export const labelCls = "mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-muted";
 
 export type ToastMessage = {
   id: string;
@@ -37,7 +37,7 @@ export function ToastViewport({
 }) {
   return (
     <div
-      className="pointer-events-none fixed bottom-5 right-5 z-[120] flex w-full max-w-sm flex-col gap-2 px-4 sm:px-0"
+      className="pointer-events-none fixed inset-x-3 bottom-24 z-[120] flex flex-col gap-2 sm:left-auto sm:right-5 sm:w-full sm:max-w-sm lg:bottom-5"
       aria-live="polite"
     >
       {toasts.map((toast) => (
@@ -98,7 +98,7 @@ export function ConfirmModal({
       aria-modal="true"
       onMouseDown={(e) => e.target === e.currentTarget && !busy && onCancel()}
     >
-      <div className="card w-full max-w-md border-brand/25 p-6 shadow-glow">
+      <div className="glass-card w-full max-w-md border-brand/25 p-6 shadow-glow">
         <div className="flex items-start gap-3">
           <div
             className={`rounded-xl border p-2.5 ${

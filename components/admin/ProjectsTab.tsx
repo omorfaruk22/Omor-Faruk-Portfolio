@@ -4,8 +4,15 @@ import Link from "next/link";
 import {
   ArrowDown,
   ArrowUp,
+  ArrowUpRight,
+  Copy,
+  Eye,
   ExternalLink,
   FolderKanban,
+  Github,
+  LayoutGrid,
+  Layers3,
+  List,
   Loader2,
   Pencil,
   Plus,
@@ -78,42 +85,25 @@ export default function ProjectsTab({
   onNotify,
   initialOpenNew = false,
   onConsumeOpenNew,
+  initialEditProjectId = null,
+  onConsumeEditProjectId,
 }: {
   data: PortfolioData;
   onDataChange: (next: PortfolioData) => void;
   onNotify: (type: "success" | "error" | "info", text: string) => void;
   initialOpenNew?: boolean;
   onConsumeOpenNew?: () => void;
+  initialEditProjectId?: string | null;
+  onConsumeEditProjectId?: () => void;
 }) {
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [editing, setEditing] = useState<ProjectDraft | null>(null);
   const [slugTouched, setSlugTouched] = useState(false);
   const [saving, setSaving] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ProjectItem | null>(null);
-
-  useEffect(() => {
-    if (initialOpenNew) {
-      setEditing(emptyDraft());
-      setSlugTouched(false);
-      onConsumeOpenNew?.();
-    }
-  }, [initialOpenNew, onConsumeOpenNew]);
-
-  const homeIds = useMemo(
-    () => new Set(getHomeProjects(data.projects, 4).map((p) => p.id)),
-    [data.projects]
-  );
-
-  const featuredCount = data.projects.filter((p) => p.featured).length;
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return data.projects;
-    return data.projects.filter((p) =>
-      [p.title, p.category, p.slug, ...p.technologies].join(" ").toLowerCase().includes(q)
-    );
-  }, [data.projects, search]);
 
   const openEdit = (p: ProjectItem) => {
     setEditing({
@@ -134,6 +124,44 @@ export default function ProjectsTab({
     });
     setSlugTouched(true);
   };
+
+  useEffect(() => {
+    if (initialOpenNew) {
+      setEditing(emptyDraft());
+      setSlugTouched(false);
+      onConsumeOpenNew?.();
+    }
+  }, [initialOpenNew, onConsumeOpenNew]);
+
+  useEffect(() => {
+    if (!initialEditProjectId) return;
+    const found = data.projects.find((p) => p.id === initialEditProjectId);
+    if (found) openEdit(found);
+    onConsumeEditProjectId?.();
+  }, [initialEditProjectId, data.projects, onConsumeEditProjectId]);
+
+  const homeSlotMap = useMemo(() => {
+    const map = new Map<string, number>();
+    getHomeProjects(data.projects, 4).forEach((p, idx) => map.set(p.id, idx + 1));
+    return map;
+  }, [data.projects]);
+
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(data.projects.map((p) => p.category).filter(Boolean)))],
+    [data.projects]
+  );
+
+  const featuredCount = data.projects.filter((p) => p.featured).length;
+  const activeCat = categories.includes(categoryFilter) ? categoryFilter : "All";
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return data.projects.filter((p) => {
+      if (activeCat !== "All" && p.category !== activeCat) return false;
+      if (!q) return true;
+      return [p.title, p.category, p.slug, ...p.technologies].join(" ").toLowerCase().includes(q);
+    });
+  }, [data.projects, search, activeCat]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,7 +193,7 @@ export default function ProjectsTab({
         onDataChange(res.data);
         onNotify(
           "success",
-          `Added "${res.project.title}" — live now on /projects and /projects/${res.project.slug}!`
+          `Published "${res.project.title}" — live on /projects and /projects/${res.project.slug}!`
         );
       }
       setEditing(null);
@@ -174,6 +202,26 @@ export default function ProjectsTab({
     } finally {
       setSaving(false);
     }
+  };
+
+  const duplicateProject = (p: ProjectItem) => {
+    setEditing({
+      title: `${p.title} Copy`,
+      slug: `${p.slug}-copy`,
+      description: p.description,
+      image: p.image,
+      technologies: [...p.technologies],
+      github: p.github,
+      serverGithub: p.serverGithub ?? "",
+      live: p.live,
+      category: p.category,
+      featured: false,
+      highlights: [...p.highlights],
+      challenges: [...p.challenges],
+      improvements: [...p.improvements],
+    });
+    setSlugTouched(false);
+    onNotify("info", `Duplicated "${p.title}" into editor — edit and click Publish.`);
   };
 
   const toggleFeatured = async (project: ProjectItem) => {
@@ -187,8 +235,8 @@ export default function ProjectsTab({
       onNotify(
         "success",
         res.project.featured
-          ? `"${project.title}" marked as Featured for Homepage.`
-          : `"${project.title}" removed from Featured.`
+          ? `"${project.title}" starred for Homepage.`
+          : `"${project.title}" unstarred.`
       );
     } catch (err) {
       onNotify("error", err instanceof Error ? err.message : "Failed to update project.");
@@ -236,24 +284,26 @@ export default function ProjectsTab({
 
   return (
     <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
-        <div>
+      {/* Studio Header Banner */}
+      <div className="glass-card flex flex-col justify-between gap-4 border-brand/30 p-5 sm:flex-row sm:items-center">
+        <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-bold text-fg">Projects Manager</h2>
+            <h2 className="flex items-center gap-2 text-lg font-bold text-fg">
+              <FolderKanban size={18} className="text-brand" /> Projects Studio
+            </h2>
             <span className="rounded-full border border-brand/30 bg-brand/10 px-2.5 py-0.5 font-mono text-xs text-brand">
               {data.projects.length} total
             </span>
             <span className="rounded-full border border-brand/20 bg-ink px-2.5 py-0.5 font-mono text-xs text-muted">
-              {featuredCount} starred · first 4 shown on Home
+              {featuredCount} starred · Top 4 on Home
             </span>
           </div>
           <p className="mt-1 text-xs leading-relaxed text-muted">
-            Your Main Page (/) displays the top 4 featured projects. Every project you add here automatically appears on{" "}
+            Main Page (/) highlights 4 projects. Every project you publish appears automatically on{" "}
             <Link href="/projects" target="_blank" className="text-brand hover:underline">
               /projects
             </Link>{" "}
-            with its own detail page.
+            with a dynamic detail page.
           </p>
         </div>
         <button
@@ -262,234 +312,318 @@ export default function ProjectsTab({
             setEditing(emptyDraft());
             setSlugTouched(false);
           }}
-          className="btn-primary shrink-0 font-mono !text-xs"
+          className="btn-primary shrink-0 !rounded-xl font-mono !text-xs shadow-glow"
         >
-          <Plus size={16} /> Add Project
+          <Plus size={16} /> New Project
         </button>
       </div>
 
-      {/* Add / Edit Project Form */}
+      {/* Split-Screen Studio Editor with Real-Time Live Card Preview */}
       {editing && (
         <form
           onSubmit={handleSave}
-          className="card border-brand/40 p-5 shadow-glow sm:p-6"
+          className="glass-card border-brand/45 p-5 shadow-glow sm:p-6"
         >
           <div className="flex items-center justify-between border-b border-brand/15 pb-4">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-wider text-brand">
-                {editing.id ? "Edit Project" : "New Project"}
+            <div className="min-w-0">
+              <p className="font-mono text-[11px] uppercase tracking-wider text-brand">
+                {editing.id ? "Editing Project" : "New Project Studio"}
               </p>
-              <h3 className="mt-0.5 text-lg font-bold text-fg">
+              <h3 className="mt-0.5 truncate text-lg font-bold text-fg">
                 {editing.title || "Untitled Project"}
               </h3>
             </div>
             <button
               type="button"
               onClick={() => setEditing(null)}
-              className="rounded-md border border-brand/20 p-2 text-muted hover:border-brand hover:text-fg"
+              className="rounded-lg border border-brand/20 p-2 text-muted hover:border-brand hover:text-fg"
               aria-label="Close editor"
             >
               <X size={16} />
             </button>
           </div>
 
-          <div className="mt-5 grid gap-5 md:grid-cols-2">
-            <div>
-              <label className={labelCls}>Project Title *</label>
-              <input
-                type="text"
-                required
-                value={editing.title}
-                onChange={(e) => {
-                  const title = e.target.value;
-                  setEditing((prev) =>
-                    prev
-                      ? {
-                          ...prev,
-                          title,
-                          slug: slugTouched ? prev.slug : slugify(title),
-                        }
-                      : null
-                  );
-                }}
-                placeholder="e.g. DevFlow SaaS"
-                className={inputCls}
-              />
-            </div>
+          <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(0,0.9fr)]">
+            {/* Left: Form fields */}
+            <div className="min-w-0 space-y-5">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className={labelCls}>Project Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editing.title}
+                    onChange={(e) => {
+                      const title = e.target.value;
+                      setEditing((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              title,
+                              slug: slugTouched ? prev.slug : slugify(title),
+                            }
+                          : null
+                      );
+                    }}
+                    placeholder="e.g. DevFlow SaaS"
+                    className={inputCls}
+                  />
+                </div>
 
-            <div>
-              <label className={labelCls}>URL Slug (/projects/...)</label>
-              <input
-                type="text"
-                value={editing.slug}
-                onChange={(e) => {
-                  setSlugTouched(true);
-                  setEditing((prev) => (prev ? { ...prev, slug: slugify(e.target.value) } : null));
-                }}
-                placeholder="devflow-saas"
-                className={`${inputCls} font-mono text-xs`}
-              />
-            </div>
+                <div>
+                  <label className={labelCls}>URL Slug</label>
+                  <input
+                    type="text"
+                    value={editing.slug}
+                    onChange={(e) => {
+                      setSlugTouched(true);
+                      setEditing((prev) => (prev ? { ...prev, slug: slugify(e.target.value) } : null));
+                    }}
+                    placeholder="devflow-saas"
+                    className={`${inputCls} font-mono text-xs`}
+                  />
+                </div>
 
-            <div>
-              <label className={labelCls}>Category</label>
-              <input
-                type="text"
-                value={editing.category}
-                onChange={(e) =>
-                  setEditing((prev) => (prev ? { ...prev, category: e.target.value } : null))
-                }
-                placeholder="Full Stack"
-                className={inputCls}
-              />
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {CATEGORY_PRESETS.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() =>
-                      setEditing((prev) => (prev ? { ...prev, category: cat } : null))
+                <div>
+                  <label className={labelCls}>Category</label>
+                  <input
+                    type="text"
+                    value={editing.category}
+                    onChange={(e) =>
+                      setEditing((prev) => (prev ? { ...prev, category: e.target.value } : null))
                     }
-                    className={`rounded-md border px-2 py-0.5 font-mono text-[11px] transition ${
-                      editing.category === cat
-                        ? "border-brand bg-brand/15 text-brand"
-                        : "border-brand/20 bg-ink text-muted hover:text-fg"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+                    placeholder="Full Stack"
+                    className={inputCls}
+                  />
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {CATEGORY_PRESETS.map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() =>
+                          setEditing((prev) => (prev ? { ...prev, category: cat } : null))
+                        }
+                        className={`rounded-md border px-2 py-0.5 font-mono text-[10px] transition ${
+                          editing.category === cat
+                            ? "border-brand bg-brand/15 text-brand"
+                            : "border-brand/20 bg-ink text-muted hover:text-fg"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex items-start sm:pt-6">
+                  <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-brand/25 bg-ink px-4 py-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-fg">Feature on Home</p>
+                      <p className="text-[11px] text-muted">Top 4 featured show on Main Page</p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={editing.featured}
+                      onChange={(e) =>
+                        setEditing((prev) => (prev ? { ...prev, featured: e.target.checked } : null))
+                      }
+                      className="h-5 w-5 shrink-0 accent-brand"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className={labelCls}>Short Description *</label>
+                <textarea
+                  required
+                  rows={3}
+                  value={editing.description}
+                  onChange={(e) =>
+                    setEditing((prev) => (prev ? { ...prev, description: e.target.value } : null))
+                  }
+                  placeholder="Describe what the application does and who it helps..."
+                  className={textareaCls}
+                />
+              </div>
+
+              <div>
+                <label className={labelCls}>Project Preview Image (16:9 recommended)</label>
+                <MediaUploadField
+                  value={editing.image}
+                  onChange={(url) => setEditing((prev) => (prev ? { ...prev, image: url } : null))}
+                  presets={IMAGE_PRESETS}
+                  onNotify={onNotify}
+                />
+              </div>
+
+              <div>
+                <label className={labelCls}>Technologies (press Enter or comma)</label>
+                <TagInput
+                  values={editing.technologies}
+                  onChange={(technologies) =>
+                    setEditing((prev) => (prev ? { ...prev, technologies } : null))
+                  }
+                  placeholder="Next.js, TypeScript, Tailwind CSS, MongoDB..."
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className={labelCls}>Live Demo URL</label>
+                  <input
+                    type="url"
+                    value={editing.live}
+                    onChange={(e) =>
+                      setEditing((prev) => (prev ? { ...prev, live: e.target.value } : null))
+                    }
+                    placeholder="https://my-project.vercel.app"
+                    className={`${inputCls} font-mono text-xs`}
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>GitHub Repository URL</label>
+                  <input
+                    type="url"
+                    value={editing.github}
+                    onChange={(e) =>
+                      setEditing((prev) => (prev ? { ...prev, github: e.target.value } : null))
+                    }
+                    placeholder="https://github.com/omorfaruk22/project"
+                    className={`${inputCls} font-mono text-xs`}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className={labelCls}>Server GitHub URL (optional)</label>
+                  <input
+                    type="url"
+                    value={editing.serverGithub}
+                    onChange={(e) =>
+                      setEditing((prev) => (prev ? { ...prev, serverGithub: e.target.value } : null))
+                    }
+                    placeholder="https://github.com/omorfaruk22/project-server"
+                    className={`${inputCls} font-mono text-xs`}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className={labelCls}>Highlights / What I Built</label>
+                <StringListEditor
+                  items={editing.highlights}
+                  onChange={(highlights) =>
+                    setEditing((prev) => (prev ? { ...prev, highlights } : null))
+                  }
+                  placeholder="Add a key feature or accomplishment..."
+                  addLabel="Add"
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className={labelCls}>Challenges</label>
+                  <StringListEditor
+                    items={editing.challenges}
+                    onChange={(challenges) =>
+                      setEditing((prev) => (prev ? { ...prev, challenges } : null))
+                    }
+                    placeholder="Add a challenge..."
+                    addLabel="Add"
+                  />
+                </div>
+                <div>
+                  <label className={labelCls}>Future Improvements</label>
+                  <StringListEditor
+                    items={editing.improvements}
+                    onChange={(improvements) =>
+                      setEditing((prev) => (prev ? { ...prev, improvements } : null))
+                    }
+                    placeholder="Add a future plan..."
+                    addLabel="Add"
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="flex items-start pt-1 md:pt-6">
-              <label className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-xl border border-brand/25 bg-ink px-4 py-3">
-                <div>
-                  <p className="text-sm font-semibold text-fg">Feature on Homepage</p>
-                  <p className="text-xs text-muted">
-                    Top 4 featured projects are highlighted on the Main Page
+            {/* Right: Real-Time Live Card Preview */}
+            <aside className="min-w-0">
+              <div className="xl:sticky xl:top-24">
+                <div className="mb-2.5 flex items-center justify-between font-mono text-[11px] uppercase tracking-wider text-brand">
+                  <span className="flex items-center gap-1.5">
+                    <Eye size={13} /> Real-Time Card Preview
+                  </span>
+                  <span className="truncate text-[10px] lowercase text-muted">
+                    /projects/{editing.slug || "your-slug"}
+                  </span>
+                </div>
+
+                <div className="card overflow-hidden border-brand/30 shadow-glow">
+                  <div className="relative h-48 overflow-hidden bg-ink">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={editing.image || "/projects/bazardor.png"}
+                      alt="Live preview"
+                      className="h-full w-full object-cover"
+                    />
+                    {editing.featured && (
+                      <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full border border-brand/40 bg-brand px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase text-ink-3">
+                        <Star size={10} className="fill-current" /> Featured
+                      </span>
+                    )}
+                    <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/65 px-2.5 py-0.5 font-mono text-[10px] text-white backdrop-blur">
+                      {editing.category || "Category"}
+                    </span>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="break-words text-base font-semibold text-fg">
+                        {editing.title || "Your Project Title"}
+                      </h4>
+                      <Layers3 size={15} className="mt-1 shrink-0 text-brand" />
+                    </div>
+                    <p className="mt-1.5 line-clamp-3 break-words text-xs leading-relaxed text-muted">
+                      {editing.description ||
+                        "Start typing a description to preview how your project card will appear on the portfolio..."}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-1.5">
+                      {(editing.technologies.length > 0
+                        ? editing.technologies.slice(0, 4)
+                        : ["Next.js", "TypeScript"]
+                      ).map((t) => (
+                        <span
+                          key={t}
+                          className="rounded border border-brand/20 bg-brand/[0.05] px-2 py-0.5 text-[10px] text-muted"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                      {editing.technologies.length > 4 && (
+                        <span className="px-1 py-0.5 text-[10px] text-muted">
+                          +{editing.technologies.length - 4}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-4 flex items-center justify-between border-t border-brand/10 pt-3">
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand">
+                        Project details <ArrowUpRight size={14} />
+                      </span>
+                      <div className="flex items-center gap-2.5 text-muted">
+                        {editing.github && <Github size={14} />}
+                        {editing.live && <ExternalLink size={14} />}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3 rounded-xl border border-brand/15 bg-ink/80 p-3 font-mono text-[11px] text-muted">
+                  <p>
+                    Highlights: <span className="text-fg">{editing.highlights.length}</span> ·
+                    Challenges: <span className="text-fg">{editing.challenges.length}</span> ·
+                    Plans: <span className="text-fg">{editing.improvements.length}</span>
                   </p>
                 </div>
-                <input
-                  type="checkbox"
-                  checked={editing.featured}
-                  onChange={(e) =>
-                    setEditing((prev) => (prev ? { ...prev, featured: e.target.checked } : null))
-                  }
-                  className="h-5 w-5 accent-brand"
-                />
-              </label>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelCls}>Short Description *</label>
-              <textarea
-                required
-                rows={3}
-                value={editing.description}
-                onChange={(e) =>
-                  setEditing((prev) => (prev ? { ...prev, description: e.target.value } : null))
-                }
-                placeholder="Describe what the application does and who it helps..."
-                className={textareaCls}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelCls}>Project Preview Image (16:9 recommended)</label>
-              <MediaUploadField
-                value={editing.image}
-                onChange={(url) => setEditing((prev) => (prev ? { ...prev, image: url } : null))}
-                presets={IMAGE_PRESETS}
-                onNotify={onNotify}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelCls}>Technologies (press Enter or comma to add)</label>
-              <TagInput
-                values={editing.technologies}
-                onChange={(technologies) =>
-                  setEditing((prev) => (prev ? { ...prev, technologies } : null))
-                }
-                placeholder="Next.js, TypeScript, Tailwind CSS, MongoDB..."
-              />
-            </div>
-
-            <div>
-              <label className={labelCls}>Live Demo URL</label>
-              <input
-                type="url"
-                value={editing.live}
-                onChange={(e) =>
-                  setEditing((prev) => (prev ? { ...prev, live: e.target.value } : null))
-                }
-                placeholder="https://my-project.vercel.app"
-                className={`${inputCls} font-mono text-xs`}
-              />
-            </div>
-
-            <div>
-              <label className={labelCls}>GitHub Repository URL</label>
-              <input
-                type="url"
-                value={editing.github}
-                onChange={(e) =>
-                  setEditing((prev) => (prev ? { ...prev, github: e.target.value } : null))
-                }
-                placeholder="https://github.com/omorfaruk22/project"
-                className={`${inputCls} font-mono text-xs`}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelCls}>Server GitHub URL (optional)</label>
-              <input
-                type="url"
-                value={editing.serverGithub}
-                onChange={(e) =>
-                  setEditing((prev) => (prev ? { ...prev, serverGithub: e.target.value } : null))
-                }
-                placeholder="https://github.com/omorfaruk22/project-server"
-                className={`${inputCls} font-mono text-xs`}
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className={labelCls}>Highlights / What I Built</label>
-              <StringListEditor
-                items={editing.highlights}
-                onChange={(highlights) =>
-                  setEditing((prev) => (prev ? { ...prev, highlights } : null))
-                }
-                placeholder="Add a key feature or accomplishment..."
-                addLabel="Add highlight"
-              />
-            </div>
-
-            <div>
-              <label className={labelCls}>Challenges</label>
-              <StringListEditor
-                items={editing.challenges}
-                onChange={(challenges) =>
-                  setEditing((prev) => (prev ? { ...prev, challenges } : null))
-                }
-                placeholder="Add a technical challenge..."
-                addLabel="Add"
-              />
-            </div>
-
-            <div>
-              <label className={labelCls}>Future Improvements</label>
-              <StringListEditor
-                items={editing.improvements}
-                onChange={(improvements) =>
-                  setEditing((prev) => (prev ? { ...prev, improvements } : null))
-                }
-                placeholder="Add a planned improvement..."
-                addLabel="Add"
-              />
-            </div>
+              </div>
+            </aside>
           </div>
 
           <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-brand/15 pt-4">
@@ -497,11 +631,15 @@ export default function ProjectsTab({
               type="button"
               disabled={saving}
               onClick={() => setEditing(null)}
-              className="btn-ghost !px-4 !py-2.5"
+              className="btn-ghost !rounded-xl !px-4 !py-2.5"
             >
               Cancel
             </button>
-            <button type="submit" disabled={saving} className="btn-primary !px-5 !py-2.5 font-mono">
+            <button
+              type="submit"
+              disabled={saving}
+              className="btn-primary !rounded-xl !px-5 !py-2.5 font-mono shadow-glow"
+            >
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
               {editing.id ? "Save Changes" : "Publish Project"}
             </button>
@@ -509,49 +647,170 @@ export default function ProjectsTab({
         </form>
       )}
 
-      {/* Search bar */}
-      <label className="relative block max-w-md">
-        <Search
-          size={16}
-          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
-        />
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search projects by title, category, or tech..."
-          className={`${inputCls} pl-10`}
-        />
-      </label>
+      {/* Search + Category Filters + View Switcher */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <label className="relative block w-full sm:max-w-md">
+          <Search
+            size={16}
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
+          />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search projects by title, category, or tech..."
+            className={`${inputCls} pl-10`}
+          />
+        </label>
 
-      {/* Projects List */}
-      {filtered.length === 0 ? (
-        <div className="card border-dashed p-10 text-center">
-          <FolderKanban size={28} className="mx-auto text-muted" />
-          <p className="mt-3 text-sm text-muted">No projects found.</p>
+        <div className="flex items-center gap-1.5 self-start rounded-xl border border-brand/20 bg-ink p-1 sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setViewMode("list")}
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs transition ${
+              viewMode === "list"
+                ? "bg-brand text-ink-3 font-semibold"
+                : "text-muted hover:text-fg"
+            }`}
+          >
+            <List size={14} /> List
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode("grid")}
+            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-mono text-xs transition ${
+              viewMode === "grid"
+                ? "bg-brand text-ink-3 font-semibold"
+                : "text-muted hover:text-fg"
+            }`}
+          >
+            <LayoutGrid size={14} /> Grid
+          </button>
         </div>
-      ) : (
-        <div className="space-y-3">
-          {filtered.map((project) => {
-            const globalIndex = data.projects.findIndex((p) => p.id === project.id);
-            const isOnHome = homeIds.has(project.id);
-            const isBusy = busyId === project.id;
+      </div>
 
+      <div className="flex flex-wrap gap-2">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            type="button"
+            onClick={() => setCategoryFilter(cat)}
+            className={`rounded-full border px-3.5 py-1.5 font-mono text-xs transition ${
+              activeCat === cat
+                ? "border-brand bg-brand text-ink-3 font-semibold"
+                : "border-brand/25 bg-ink-2 text-muted hover:border-brand hover:text-fg"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Projects List or Grid */}
+      {filtered.length === 0 ? (
+        <div className="glass-card border-dashed p-10 text-center">
+          <FolderKanban size={28} className="mx-auto text-muted" />
+          <p className="mt-3 text-sm text-muted">No matching projects found.</p>
+        </div>
+      ) : viewMode === "grid" ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((project) => {
+            const slot = homeSlotMap.get(project.id);
+            const isBusy = busyId === project.id;
             return (
               <div
                 key={project.id}
-                className="card flex flex-col gap-4 border-brand/20 p-4 transition hover:border-brand/45 sm:flex-row sm:items-center"
+                className="glass-card flex flex-col overflow-hidden border-brand/20 transition hover:border-brand/50"
               >
-                <div className="relative h-28 w-full shrink-0 overflow-hidden rounded-lg border border-brand/15 bg-ink sm:h-20 sm:w-36">
+                <div className="relative h-36 bg-ink">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={project.image}
                     alt={project.title}
                     className="h-full w-full object-cover"
                   />
-                  {isOnHome && (
+                  {slot && (
+                    <span className="absolute left-2.5 top-2.5 rounded-md bg-brand px-2 py-0.5 font-mono text-[10px] font-bold text-ink-3">
+                      HOME #{slot}
+                    </span>
+                  )}
+                  <span className="absolute right-2.5 top-2.5 rounded-md bg-black/70 px-2 py-0.5 font-mono text-[10px] text-white backdrop-blur">
+                    {project.category}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col p-4">
+                  <h3 className="truncate text-base font-bold text-fg">{project.title}</h3>
+                  <p className="mt-1 line-clamp-2 flex-1 text-xs text-muted">
+                    {project.description}
+                  </p>
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-brand/15 pt-3">
+                    <button
+                      type="button"
+                      disabled={isBusy}
+                      onClick={() => toggleFeatured(project)}
+                      className={`inline-flex items-center gap-1 rounded-md border px-2 py-1 font-mono text-[11px] transition ${
+                        project.featured
+                          ? "border-brand bg-brand/15 text-brand"
+                          : "border-brand/20 bg-ink text-muted hover:text-brand"
+                      }`}
+                    >
+                      <Star size={12} className={project.featured ? "fill-current" : ""} />
+                      {project.featured ? "Featured" : "Feature"}
+                    </button>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => duplicateProject(project)}
+                        title="Duplicate"
+                        className="rounded-md border border-brand/20 bg-ink p-1.5 text-muted hover:text-fg"
+                      >
+                        <Copy size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openEdit(project)}
+                        title="Edit"
+                        className="rounded-md border border-brand/20 bg-ink p-1.5 text-muted hover:text-fg"
+                      >
+                        <Pencil size={13} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(project)}
+                        title="Delete"
+                        className="rounded-md border border-red-500/25 bg-red-500/5 p-1.5 text-red-400 hover:border-red-400"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((project) => {
+            const globalIndex = data.projects.findIndex((p) => p.id === project.id);
+            const slot = homeSlotMap.get(project.id);
+            const isBusy = busyId === project.id;
+
+            return (
+              <div
+                key={project.id}
+                className="glass-card flex flex-col gap-4 border-brand/20 p-4 transition hover:border-brand/45 sm:flex-row sm:items-center"
+              >
+                <div className="relative h-28 w-full shrink-0 overflow-hidden rounded-xl border border-brand/15 bg-ink sm:h-20 sm:w-36">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="h-full w-full object-cover"
+                  />
+                  {slot && (
                     <span className="absolute bottom-1.5 left-1.5 rounded bg-brand px-1.5 py-0.5 font-mono text-[10px] font-bold text-ink-3">
-                      HOME
+                      HOME #{slot}
                     </span>
                   )}
                 </div>
@@ -562,7 +821,7 @@ export default function ProjectsTab({
                     <span className="rounded-full border border-brand/25 bg-brand/10 px-2 py-0.5 font-mono text-[10px] text-brand">
                       {project.category}
                     </span>
-                    <span className="font-mono text-[11px] text-muted">
+                    <span className="truncate font-mono text-[11px] text-muted">
                       /projects/{project.slug}
                     </span>
                   </div>
@@ -594,45 +853,54 @@ export default function ProjectsTab({
                         ? "Featured for homepage (click to unstar)"
                         : "Star to feature on homepage"
                     }
-                    className={`rounded-md border p-2 transition ${
+                    className={`rounded-lg border p-2 transition ${
                       project.featured
                         ? "border-brand bg-brand/15 text-brand"
                         : "border-brand/20 bg-ink text-muted hover:border-brand hover:text-brand"
                     }`}
                   >
-                    <Star size={15} className={project.featured ? "fill-current" : ""} />
+                    <Star size={14} className={project.featured ? "fill-current" : ""} />
                   </button>
 
-                  {!search && (
+                  {!search && activeCat === "All" && (
                     <>
                       <button
                         type="button"
                         disabled={isBusy || globalIndex === 0}
                         onClick={() => reorder(globalIndex, -1)}
                         aria-label="Move project up"
-                        className="rounded-md border border-brand/20 bg-ink p-2 text-muted transition hover:border-brand hover:text-fg disabled:opacity-30"
+                        className="rounded-lg border border-brand/20 bg-ink p-2 text-muted transition hover:border-brand hover:text-fg disabled:opacity-30"
                       >
-                        <ArrowUp size={15} />
+                        <ArrowUp size={14} />
                       </button>
                       <button
                         type="button"
                         disabled={isBusy || globalIndex === data.projects.length - 1}
                         onClick={() => reorder(globalIndex, 1)}
                         aria-label="Move project down"
-                        className="rounded-md border border-brand/20 bg-ink p-2 text-muted transition hover:border-brand hover:text-fg disabled:opacity-30"
+                        className="rounded-lg border border-brand/20 bg-ink p-2 text-muted transition hover:border-brand hover:text-fg disabled:opacity-30"
                       >
-                        <ArrowDown size={15} />
+                        <ArrowDown size={14} />
                       </button>
                     </>
                   )}
+
+                  <button
+                    type="button"
+                    onClick={() => duplicateProject(project)}
+                    title="Duplicate project"
+                    className="rounded-lg border border-brand/20 bg-ink p-2 text-muted transition hover:border-brand hover:text-fg"
+                  >
+                    <Copy size={14} />
+                  </button>
 
                   <Link
                     href={`/projects/${project.slug}`}
                     target="_blank"
                     title="View live detail page"
-                    className="rounded-md border border-brand/20 bg-ink p-2 text-muted transition hover:border-brand hover:text-brand"
+                    className="rounded-lg border border-brand/20 bg-ink p-2 text-muted transition hover:border-brand hover:text-brand"
                   >
-                    <ExternalLink size={15} />
+                    <ExternalLink size={14} />
                   </Link>
 
                   <button
@@ -640,9 +908,9 @@ export default function ProjectsTab({
                     disabled={isBusy}
                     onClick={() => openEdit(project)}
                     title="Edit project"
-                    className="rounded-md border border-brand/20 bg-ink p-2 text-muted transition hover:border-brand hover:text-fg"
+                    className="rounded-lg border border-brand/20 bg-ink p-2 text-muted transition hover:border-brand hover:text-fg"
                   >
-                    <Pencil size={15} />
+                    <Pencil size={14} />
                   </button>
 
                   <button
@@ -650,9 +918,9 @@ export default function ProjectsTab({
                     disabled={isBusy}
                     onClick={() => setDeleteTarget(project)}
                     title="Delete project"
-                    className="rounded-md border border-red-500/25 bg-red-500/5 p-2 text-red-400 transition hover:border-red-400 hover:bg-red-500/15"
+                    className="rounded-lg border border-red-500/25 bg-red-500/5 p-2 text-red-400 transition hover:border-red-400 hover:bg-red-500/15"
                   >
-                    <Trash2 size={15} />
+                    <Trash2 size={14} />
                   </button>
                 </div>
               </div>

@@ -21,7 +21,7 @@ export default function ProjectCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 12 }}
       transition={{ duration: 0.22, delay: Math.min(index * 0.035, 0.25) }}
-      className="group card flex h-full flex-col overflow-hidden border-brand/15 transition hover:-translate-y-1 hover:border-brand/50 hover:shadow-glow"
+      className="group card flex h-full min-w-0 flex-col overflow-hidden border-brand/15 transition hover:-translate-y-1 hover:border-brand/50 hover:shadow-glow"
     >
       <Link
         href={`/projects/${project.slug}`}
@@ -43,16 +43,16 @@ export default function ProjectCard({
           {project.category}
         </span>
       </Link>
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
-          <Link href={`/projects/${project.slug}`} className="hover:text-brand">
-            <h3 className="text-lg font-semibold tracking-tight text-fg transition group-hover:text-brand">
+          <Link href={`/projects/${project.slug}`} className="min-w-0 hover:text-brand">
+            <h3 className="break-words text-lg font-semibold tracking-tight text-fg transition group-hover:text-brand">
               {project.title}
             </h3>
           </Link>
           <Layers3 size={17} className="mt-1 shrink-0 text-brand" aria-hidden="true" />
         </div>
-        <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
+        <p className="mt-2 flex-1 break-words text-sm leading-relaxed text-muted">
           {project.description}
         </p>
         <div className="mt-4 flex flex-wrap gap-1.5">

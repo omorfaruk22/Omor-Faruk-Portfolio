@@ -7,23 +7,33 @@
   --font-inter: "Inter Variable", system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
 }
-html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+  overflow-x: clip;
+  max-width: 100%;
+}
 body {
   background-color: #050805;
   color: #F0FDF4;
-  overflow-x: hidden;
+  overflow-x: clip;
+  max-width: 100%;
   background-image:
     linear-gradient(rgba(34,197,94,.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(34,197,94,.06) 1px, transparent 1px);
   background-size: 36px 36px;
 }
 ::selection { background: rgba(34,197,94,.35); }
-::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar { width: 10px; height: 8px; }
 ::-webkit-scrollbar-track { background: #050805; }
 ::-webkit-scrollbar-thumb { background: #15803D; border-radius: 6px; }
 
 @layer components {
   .card { @apply rounded-xl border border-brand/15 bg-ink-2; }
+  .glass-card {
+    @apply rounded-2xl border border-brand/20 bg-ink-2/80 backdrop-blur-xl;
+    box-shadow: inset 0 1px 0 rgba(34, 197, 94, 0.12), 0 16px 40px -20px rgba(0, 0, 0, 0.75);
+  }
   .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition; }
   .btn-primary { @apply btn bg-brand text-ink-3 hover:bg-brand-600; }
   .btn-ghost { @apply btn border border-brand/40 text-fg hover:border-brand hover:bg-brand/10; }

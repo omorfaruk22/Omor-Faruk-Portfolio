@@ -114,7 +114,7 @@ export default function SettingsTab({
 
   return (
     <div className="space-y-6">
-      <div className="card border-brand/25 p-5">
+      <div className="glass-card border-brand/25 p-5">
         <h2 className="flex items-center gap-2 text-lg font-bold text-fg">
           <Settings size={18} className="text-brand" /> Settings, Security &amp; Backups
         </h2>
@@ -124,7 +124,7 @@ export default function SettingsTab({
       </div>
 
       {/* Password Change */}
-      <form onSubmit={handlePasswordChange} className="card p-6">
+      <form onSubmit={handlePasswordChange} className="glass-card p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="flex items-center gap-2 text-base font-bold text-fg">
@@ -184,7 +184,7 @@ export default function SettingsTab({
       </form>
 
       {/* Storage Backend Diagnostics */}
-      <div className="card p-6">
+      <div className="glass-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="flex items-center gap-2 text-base font-bold text-fg">
             <Database size={17} className="text-brand" /> Data Storage Backend
@@ -221,7 +221,7 @@ UPSTASH_REDIS_REST_TOKEN=...`}
       </div>
 
       {/* Backup, Restore & Reset */}
-      <div className="card p-6">
+      <div className="glass-card p-6">
         <h3 className="text-base font-bold text-fg">Backup, Restore &amp; Reset</h3>
         <p className="mt-1 text-xs text-muted">
           Export your complete portfolio as JSON, restore from a backup file, or reset everything back to the original seed data.

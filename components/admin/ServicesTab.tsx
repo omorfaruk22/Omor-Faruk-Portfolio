@@ -39,7 +39,7 @@ export default function ServicesTab({
 
   return (
     <div className="space-y-6">
-      <div className="card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
+      <div className="glass-card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
         <div>
           <h2 className="flex items-center gap-2 text-lg font-bold text-fg">
             <Wrench size={18} className="text-brand" /> Services Manager
@@ -59,7 +59,7 @@ export default function ServicesTab({
         </button>
       </div>
 
-      <div className="card p-6">
+      <div className="glass-card p-6">
         <StringListEditor
           items={services}
           onChange={setServices}

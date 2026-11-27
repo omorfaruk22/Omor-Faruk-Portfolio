@@ -51,15 +51,15 @@ export default function Terminal() {
   const handle = profile.name.split(" ")[0]?.toLowerCase() || "dev";
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-5 pb-10 md:px-8">
-      <div ref={ref} className="card overflow-hidden shadow-glow">
+    <section className="mx-auto w-full max-w-6xl overflow-x-clip px-4 pb-10 sm:px-5 md:px-8">
+      <div ref={ref} className="card w-full min-w-0 max-w-full overflow-hidden shadow-glow">
         <div className="flex items-center gap-2 border-b border-brand/10 bg-black/30 px-4 py-2.5 font-mono text-xs text-muted">
-          <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
-          <span className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
-          <span className="ml-2">{handle}@dev: ~</span>
+          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-red-500/70" />
+          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-yellow-500/70" />
+          <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-green-500/70" />
+          <span className="ml-2 truncate">{handle}@dev: ~</span>
         </div>
-        <pre className="min-h-[200px] overflow-x-auto p-4 font-mono text-[12px] leading-6 sm:p-5 sm:text-[13px]">
+        <pre className="min-h-[200px] w-full max-w-full overflow-x-auto whitespace-pre-wrap break-words p-4 font-mono text-[12px] leading-6 sm:whitespace-pre sm:p-5 sm:text-[13px]">
           {lines.map((l, i) => (
             <div key={i}>
               {l.startsWith("$ ") ? (

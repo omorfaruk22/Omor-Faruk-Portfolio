@@ -45,7 +45,7 @@ export default function Experience() {
             <li key={x.id || `${x.company}-${x.position}`} className="relative pl-6">
               <Reveal>
                 <span className="absolute -left-[7px] top-1.5 h-3 w-3 rounded-full bg-brand shadow-glow" />
-                <div className="card border-brand/20 p-5 sm:p-6">
+                <div className="card min-w-0 border-brand/20 p-4 sm:p-6">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="font-mono text-xs text-brand">{x.duration}</p>
                     {x.location && (
@@ -54,8 +54,8 @@ export default function Experience() {
                       </span>
                     )}
                   </div>
-                  <h3 className="mt-1.5 text-lg font-semibold text-fg">{x.position}</h3>
-                  <p className="text-sm text-muted">{x.company}</p>
+                  <h3 className="mt-1.5 break-words text-lg font-semibold text-fg">{x.position}</h3>
+                  <p className="break-words text-sm text-muted">{x.company}</p>
                   {x.responsibilities.length > 0 && (
                     <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-muted">
                       {x.responsibilities.map((r, idx) => (

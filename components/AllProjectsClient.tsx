@@ -49,7 +49,7 @@ export default function AllProjectsClient() {
   );
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-5 pb-20 pt-10 md:px-8 md:pt-14">
+    <section className="mx-auto w-full max-w-6xl overflow-x-clip px-4 pb-20 pt-8 sm:px-5 md:px-8 md:pt-14">
       <Link
         href="/"
         className="mb-7 inline-flex items-center gap-2 font-mono text-sm text-muted transition hover:text-brand"
@@ -58,11 +58,11 @@ export default function AllProjectsClient() {
       </Link>
 
       <div className="flex flex-col justify-between gap-6 border-b border-brand/15 pb-8 md:flex-row md:items-end">
-        <div>
+        <div className="min-w-0">
           <div className="inline-flex items-center gap-2 rounded-full border border-brand/25 bg-ink-2/80 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-brand">
             <FolderKanban size={13} /> Project Archive
           </div>
-          <h1 className="mt-4 text-4xl font-extrabold tracking-tight text-fg sm:text-5xl">
+          <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-fg sm:text-5xl">
             All <span className="text-brand">Projects</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">
@@ -71,18 +71,18 @@ export default function AllProjectsClient() {
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 font-mono">
-          <div className="card px-4 py-3 text-center">
-            <p className="text-xl font-bold text-brand">{projects.length}</p>
-            <p className="mt-0.5 text-[11px] text-muted">Total</p>
+        <div className="grid grid-cols-3 gap-2 font-mono sm:gap-3">
+          <div className="card min-w-0 px-2.5 py-2.5 text-center sm:px-4 sm:py-3">
+            <p className="text-lg font-bold text-brand sm:text-xl">{projects.length}</p>
+            <p className="mt-0.5 truncate text-[10px] text-muted sm:text-[11px]">Total</p>
           </div>
-          <div className="card px-4 py-3 text-center">
-            <p className="text-xl font-bold text-fg">{featuredCount}</p>
-            <p className="mt-0.5 text-[11px] text-muted">Featured</p>
+          <div className="card min-w-0 px-2.5 py-2.5 text-center sm:px-4 sm:py-3">
+            <p className="text-lg font-bold text-fg sm:text-xl">{featuredCount}</p>
+            <p className="mt-0.5 truncate text-[10px] text-muted sm:text-[11px]">Featured</p>
           </div>
-          <div className="card px-4 py-3 text-center">
-            <p className="text-xl font-bold text-fg">{uniqueTechCount}</p>
-            <p className="mt-0.5 text-[11px] text-muted">Technologies</p>
+          <div className="card min-w-0 px-2.5 py-2.5 text-center sm:px-4 sm:py-3">
+            <p className="text-lg font-bold text-fg sm:text-xl">{uniqueTechCount}</p>
+            <p className="mt-0.5 truncate text-[10px] text-muted sm:text-[11px]">Tech</p>
           </div>
         </div>
       </div>

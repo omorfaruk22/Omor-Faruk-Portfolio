@@ -36,9 +36,7 @@ export default function CodeEditor() {
   const code = useMemo(() => {
     const currentEdu =
       profile.education.find((e) => e.current) ?? profile.education[profile.education.length - 1];
-    const topSkills = Array.from(
-      new Set(skills.flatMap((g) => g.items))
-    ).slice(0, 7);
+    const topSkills = Array.from(new Set(skills.flatMap((g) => g.items))).slice(0, 7);
     const isAvailable = option.id !== "unavailable";
     const esc = (s: string) => s.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 
@@ -69,23 +67,23 @@ ${skillLines}
 
   return (
     <div
-      className="card w-full overflow-hidden text-[11px] shadow-glow sm:text-xs"
+      className="card w-full min-w-0 max-w-full overflow-hidden text-[11px] shadow-glow sm:text-xs"
       aria-label="portfolio.tsx code editor"
     >
       <div className="flex items-center gap-2 border-b border-brand/10 bg-black/30 px-3 py-2 font-mono">
-        <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-green-500/70" />
-        <span className="ml-2 rounded-t border-b border-brand px-2 py-0.5 text-fg">
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-red-500/70" />
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-yellow-500/70" />
+        <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-green-500/70" />
+        <span className="ml-2 truncate rounded-t border-b border-brand px-2 py-0.5 text-fg">
           portfolio.tsx
         </span>
         <span className="hidden text-muted sm:inline">README.md</span>
       </div>
-      <pre className="max-h-[360px] overflow-auto p-3 font-mono leading-5 sm:p-4">
-        <code>
+      <pre className="max-h-[340px] w-full max-w-full overflow-x-auto overflow-y-auto p-3 font-mono leading-5 sm:max-h-[360px] sm:p-4">
+        <code className="block w-full min-w-0">
           {lines.map((l, i) => (
-            <div key={i} className="whitespace-pre">
-              <span className="mr-3 inline-block w-5 select-none text-right text-muted/60">
+            <div key={i} className="whitespace-pre-wrap break-words sm:whitespace-pre sm:break-normal">
+              <span className="mr-2.5 inline-block w-4 select-none text-right text-muted/60 sm:mr-3 sm:w-5">
                 {i + 1}
               </span>
               {highlight(l)}

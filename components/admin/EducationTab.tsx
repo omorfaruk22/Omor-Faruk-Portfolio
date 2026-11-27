@@ -76,7 +76,7 @@ export default function EducationTab({
 
   return (
     <div className="space-y-6">
-      <div className="card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
+      <div className="glass-card flex flex-col justify-between gap-4 border-brand/25 p-5 sm:flex-row sm:items-center">
         <div>
           <h2 className="flex items-center gap-2 text-lg font-bold text-fg">
             <GraduationCap size={18} className="text-brand" /> Education Manager
@@ -103,7 +103,7 @@ export default function EducationTab({
 
       <div className="space-y-4">
         {items.map((edu, idx) => (
-          <div key={edu.id} className="card border-brand/20 p-5">
+          <div key={edu.id} className="glass-card border-brand/20 p-5">
             <div className="flex items-center justify-between gap-2 border-b border-brand/10 pb-3">
               <span className="font-mono text-xs text-brand">Entry #{idx + 1}</span>
               <div className="flex items-center gap-1.5">

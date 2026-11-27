@@ -18,9 +18,9 @@ export function StatusDot({ color }: { color: string }) {
 export function StatusLabel({ className = "" }: { className?: string }) {
   const { option } = useApp();
   return (
-    <span className={`inline-flex items-center gap-2 font-mono text-xs text-muted ${className}`}>
+    <span className={`inline-flex max-w-full flex-wrap items-center gap-2 font-mono text-xs text-muted ${className}`}>
       <StatusDot color={option.color} />
-      <span>{option.label}</span>
+      <span className="break-words">{option.label}</span>
     </span>
   );
 }
@@ -45,12 +45,12 @@ export default function StatusDropdown() {
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-full border border-brand/25 px-3 py-1.5 font-mono text-xs text-muted transition hover:border-brand/60 hover:text-fg"
+        className="flex items-center gap-1.5 rounded-full border border-brand/25 px-2.5 py-1.5 font-mono text-xs text-muted transition hover:border-brand/60 hover:text-fg sm:gap-2 sm:px-3"
       >
         <StatusDot color={option.color} />
-        <span className="hidden max-w-[140px] truncate sm:inline">{option.label}</span>
-        <span className="sm:hidden">Status</span>
-        <ChevronDown size={14} className={`transition ${open ? "rotate-180" : ""}`} />
+        <span className="hidden max-w-[130px] truncate md:inline">{option.label}</span>
+        <span className="sr-only md:hidden">{option.label}</span>
+        <ChevronDown size={13} className={`transition ${open ? "rotate-180" : ""}`} />
       </button>
       <AnimatePresence>
         {open && (
@@ -60,13 +60,13 @@ export default function StatusDropdown() {
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
-            className="card absolute right-0 z-50 mt-2 w-72 p-4 shadow-glow"
+            className="card fixed left-4 right-4 top-[72px] z-50 p-4 shadow-glow sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-72"
           >
             <div className="flex items-center justify-between gap-2">
               <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
                 Current Status
               </span>
-              <span className="rounded-full border border-brand/25 bg-brand/10 px-2 py-0.5 font-mono text-[10px] text-brand">
+              <span className="truncate rounded-full border border-brand/25 bg-brand/10 px-2 py-0.5 font-mono text-[10px] text-brand">
                 {option.code}
               </span>
             </div>
