@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
+:root {
+  color-scheme: dark;
+  --font-inter: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 body {
   background-color: #050805;

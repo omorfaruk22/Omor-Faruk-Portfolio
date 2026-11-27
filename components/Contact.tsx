@@ -2,19 +2,25 @@
 import { useState } from "react";
 import Section from "./Section";
 import Reveal from "./Reveal";
-import { profile } from "@/data/profile";
 import { StatusLabel } from "./StatusDropdown";
+import { useApp } from "./Providers";
 
 export default function Contact() {
+  const { data } = useApp();
+  const { profile } = data;
+
   const [f, setF] = useState({ name: "", email: "", subject: "", message: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
-  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value });
+  const set =
+    (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      setF({ ...f, [k]: e.target.value });
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
     try {
-      const response = await fetch("https://formspree.io/f/mvkkzyja", {
+      const endpoint = profile.formspreeUrl || "https://formspree.io/f/mvkkzyja";
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { Accept: "application/json", "Content-Type": "application/json" },
         body: JSON.stringify(f),
@@ -27,25 +33,74 @@ export default function Contact() {
     }
   };
 
-  const field = "w-full rounded-lg border border-brand/20 bg-ink-2 px-4 py-3 text-sm outline-none transition focus:border-brand";
+  const field =
+    "w-full rounded-lg border border-brand/20 bg-ink-2 px-4 py-3 text-sm outline-none transition focus:border-brand";
 
   return (
     <Section id="contact" title="Let's Build Something Together.">
       <div className="grid gap-10 md:grid-cols-2">
         <Reveal className="space-y-3 font-mono text-sm">
           <StatusLabel />
-          <p><span className="text-brand">email</span> — <a href={`mailto:${profile.email}`} className="break-all hover:underline">{profile.email}</a></p>
-          <p><span className="text-brand">phone</span> — {profile.phones.map((p, i) => <span key={p}>{i > 0 && " / "}<a href={`tel:${p}`} className="hover:underline">{p}</a></span>)}</p>
-          <p><span className="text-brand">location</span> — {profile.location}</p>
+          <p>
+            <span className="text-brand">email</span> —{" "}
+            <a href={`mailto:${profile.email}`} className="break-all hover:underline">
+              {profile.email}
+            </a>
+          </p>
+          {profile.phones.length > 0 && (
+            <p>
+              <span className="text-brand">phone</span> —{" "}
+              {profile.phones.map((p, i) => (
+                <span key={p}>
+                  {i > 0 && " / "}
+                  <a href={`tel:${p}`} className="hover:underline">
+                    {p}
+                  </a>
+                </span>
+              ))}
+            </p>
+          )}
+          <p>
+            <span className="text-brand">location</span> — {profile.location}
+          </p>
         </Reveal>
         <Reveal>
           <form onSubmit={submit} className="space-y-3">
             <input required placeholder="Name" value={f.name} onChange={set("name")} className={field} />
-            <input required type="email" placeholder="Email" value={f.email} onChange={set("email")} className={field} />
+            <input
+              required
+              type="email"
+              placeholder="Email"
+              value={f.email}
+              onChange={set("email")}
+              className={field}
+            />
             <input placeholder="Subject" value={f.subject} onChange={set("subject")} className={field} />
-            <textarea required rows={5} placeholder="Message" value={f.message} onChange={set("message")} className={field} />
-            <button type="submit" disabled={status === "sending"} className="btn-primary w-full font-mono disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">{status === "sending" ? "./sending..." : "./send-message"}</button>
-            <p className={`min-h-5 text-sm ${status === "success" ? "text-brand" : status === "error" ? "text-red-400" : "text-muted"}`} aria-live="polite">
+            <textarea
+              required
+              rows={5}
+              placeholder="Message"
+              value={f.message}
+              onChange={set("message")}
+              className={field}
+            />
+            <button
+              type="submit"
+              disabled={status === "sending"}
+              className="btn-primary w-full font-mono disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            >
+              {status === "sending" ? "./sending..." : "./send-message"}
+            </button>
+            <p
+              className={`min-h-5 text-sm ${
+                status === "success"
+                  ? "text-brand"
+                  : status === "error"
+                    ? "text-red-400"
+                    : "text-muted"
+              }`}
+              aria-live="polite"
+            >
               {status === "success" && "Message sent successfully. Thank you!"}
               {status === "error" && "Message could not be sent. Please email me directly."}
             </p>

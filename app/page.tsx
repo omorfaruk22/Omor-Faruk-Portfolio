@@ -14,6 +14,8 @@ import SnakeBackground from "@/components/SnakeBackground";
 import ResumeModal from "@/components/ResumeModal";
 import ScrollProgress from "@/components/ScrollProgress";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <>
