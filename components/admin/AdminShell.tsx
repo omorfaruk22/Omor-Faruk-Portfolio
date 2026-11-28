@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion, useReducedMotion } from "framer-motion";
 import {
   Activity,
   Briefcase,
@@ -64,6 +64,32 @@ const NAV_ITEMS: NavItem[] = [
 const NAV_GROUPS: NavItem["group"][] = ["Workspace", "Portfolio", "System"];
 
 const MOBILE_DOCK_TABS: AdminTabId[] = ["overview", "projects", "status", "experience"];
+const TAB_ORDER: AdminTabId[] = NAV_ITEMS.map((item) => item.id);
+
+const pageVariants = {
+  enter: (dir: number) => ({
+    opacity: 0,
+    x: dir * 26,
+    scale: 0.992,
+  }),
+  center: {
+    opacity: 1,
+    x: 0,
+    scale: 1,
+  },
+  exit: (dir: number) => ({
+    opacity: 0,
+    x: dir * -18,
+    scale: 0.992,
+  }),
+};
+
+const DOCK_SPRING = {
+  type: "spring" as const,
+  stiffness: 520,
+  damping: 36,
+  mass: 0.72,
+};
 
 export default function AdminShell({
   initialData,
@@ -82,9 +108,11 @@ export default function AdminShell({
 }) {
   const router = useRouter();
   const { setData: setGlobalData } = useApp();
+  const reduceMotion = useReducedMotion();
 
   const [data, setData] = useState<PortfolioData>(initialData);
   const [activeTab, setActiveTab] = useState<AdminTabId>("overview");
+  const [navDir, setNavDir] = useState<number>(1);
   const [pendingOpenNew, setPendingOpenNew] = useState<AdminTabId | null>(null);
   const [pendingEditProjectId, setPendingEditProjectId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -121,17 +149,39 @@ export default function AdminShell({
     [setGlobalData, router]
   );
 
-  const handleNavigate = useCallback((tab: AdminTabId, openNew = false) => {
-    setActiveTab(tab);
-    setPendingOpenNew(openNew ? tab : null);
-    setSidebarOpen(false);
-  }, []);
+  const handleNavigate = useCallback(
+    (tab: AdminTabId, openNew = false) => {
+      if (tab !== activeTab) {
+        const prevIdx = TAB_ORDER.indexOf(activeTab);
+        const nextIdx = TAB_ORDER.indexOf(tab);
+        setNavDir(nextIdx >= prevIdx ? 1 : -1);
+        setActiveTab(tab);
+        if (typeof window !== "undefined" && window.scrollY > 0) {
+          window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+        }
+      }
+      setPendingOpenNew(openNew ? tab : null);
+      setSidebarOpen(false);
+    },
+    [activeTab]
+  );
 
-  const handleEditProject = useCallback((projectId: string) => {
-    setActiveTab("projects");
-    setPendingEditProjectId(projectId);
-    setSidebarOpen(false);
-  }, []);
+  const handleEditProject = useCallback(
+    (projectId: string) => {
+      if (activeTab !== "projects") {
+        const prevIdx = TAB_ORDER.indexOf(activeTab);
+        const nextIdx = TAB_ORDER.indexOf("projects");
+        setNavDir(nextIdx >= prevIdx ? 1 : -1);
+        setActiveTab("projects");
+        if (typeof window !== "undefined" && window.scrollY > 0) {
+          window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+        }
+      }
+      setPendingEditProjectId(projectId);
+      setSidebarOpen(false);
+    },
+    [activeTab]
+  );
 
   const handleExportJson = useCallback(() => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -335,7 +385,7 @@ export default function AdminShell({
 
       {/* Desktop Sidebar */}
       <aside className="hidden w-64 shrink-0 border-r border-brand/15 bg-ink-2/95 lg:sticky lg:top-0 lg:block lg:h-screen">
-        {SidebarContent}
+        <LayoutGroup id="desktop-sidebar">{SidebarContent}</LayoutGroup>
       </aside>
 
       {/* Mobile Drawer */}
@@ -345,7 +395,7 @@ export default function AdminShell({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: 0.16 }}
             className="fixed inset-0 z-50 bg-black/75 lg:hidden"
             onMouseDown={(e) => e.target === e.currentTarget && setSidebarOpen(false)}
           >
@@ -353,10 +403,10 @@ export default function AdminShell({
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
-              transition={{ type: "tween", duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ type: "spring", stiffness: 460, damping: 38, mass: 0.8 }}
               className="h-full w-72 max-w-[85vw] border-r border-brand/25 bg-ink-2 will-change-transform"
             >
-              {SidebarContent}
+              <LayoutGroup id="mobile-drawer">{SidebarContent}</LayoutGroup>
             </motion.aside>
           </motion.div>
         )}
@@ -378,10 +428,20 @@ export default function AdminShell({
               <Menu size={18} />
             </button>
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h1 className="truncate text-sm font-bold text-fg sm:text-lg">
-                  {currentNav.label}
-                </h1>
+              <div className="flex items-center gap-2 overflow-hidden">
+                <AnimatePresence mode="popLayout" initial={false} custom={navDir}>
+                  <motion.h1
+                    key={activeTab}
+                    custom={navDir}
+                    initial={reduceMotion ? false : { opacity: 0, y: navDir * 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={reduceMotion ? undefined : { opacity: 0, y: navDir * -8 }}
+                    transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                    className="truncate text-sm font-bold text-fg sm:text-lg"
+                  >
+                    {currentNav.label}
+                  </motion.h1>
+                </AnimatePresence>
                 <span className="hidden rounded-full border border-brand/25 bg-brand/10 px-2 py-0.5 font-mono text-[10px] text-brand sm:inline-flex">
                   {storageBackend === "mongodb"
                     ? "MongoDB"
@@ -457,13 +517,22 @@ export default function AdminShell({
             </div>
           )}
 
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.14 }}
-            className="min-w-0"
-          >
+          <div className="relative min-w-0 overflow-x-clip">
+            <AnimatePresence mode="popLayout" initial={false} custom={navDir}>
+              <motion.div
+                key={activeTab}
+                custom={navDir}
+                variants={reduceMotion ? undefined : pageVariants}
+                initial={reduceMotion ? false : "enter"}
+                animate="center"
+                exit={reduceMotion ? undefined : "exit"}
+                transition={{
+                  x: { type: "spring", stiffness: 420, damping: 36, mass: 0.75 },
+                  opacity: { duration: 0.16, ease: "easeOut" },
+                  scale: { duration: 0.2, ease: [0.22, 1, 0.36, 1] },
+                }}
+                className="min-w-0 will-change-transform"
+              >
               {activeTab === "overview" && (
                 <OverviewTab
                   data={data}
@@ -539,47 +608,106 @@ export default function AdminShell({
                   onNotify={notify}
                 />
               )}
-          </motion.div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </main>
       </div>
 
-      {/* Mobile Native-Style Bottom Floating Dock (GPU composited, zero mobile blur drag) */}
-      <nav
-        aria-label="Mobile quick navigation"
-        style={{ transform: "translateZ(0)" }}
-        className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 gap-1 rounded-2xl border border-brand/30 bg-ink-2/[0.98] p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.7)] lg:hidden"
-      >
-        {MOBILE_DOCK_TABS.map((tabId) => {
-          const item = NAV_ITEMS.find((n) => n.id === tabId)!;
-          const Icon = item.icon;
-          const active = activeTab === tabId;
-          return (
-            <button
-              key={tabId}
-              type="button"
-              onClick={() => handleNavigate(tabId)}
-              className={`flex flex-col items-center justify-center gap-0.5 rounded-xl py-2 font-mono text-[10px] transition ${
-                active ? "bg-brand/20 font-semibold text-brand" : "text-muted hover:text-fg"
-              }`}
-            >
-              <Icon size={16} />
-              <span className="truncate">{item.shortLabel}</span>
-            </button>
-          );
-        })}
-        <button
-          type="button"
-          onClick={() => setSidebarOpen(true)}
-          className={`flex flex-col items-center justify-center gap-0.5 rounded-xl py-2 font-mono text-[10px] transition ${
-            !MOBILE_DOCK_TABS.includes(activeTab)
-              ? "bg-brand/20 font-semibold text-brand"
-              : "text-muted hover:text-fg"
-          }`}
+      {/* Mobile Native-Style Bottom Floating Dock (120Hz spring sliding indicator, zero blur lag) */}
+      <LayoutGroup id="mobile-bottom-dock">
+        <nav
+          aria-label="Mobile quick navigation"
+          style={{ transform: "translateZ(0)" }}
+          className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 gap-1 rounded-2xl border border-brand/30 bg-ink-2/[0.98] p-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.75)] lg:hidden"
         >
-          <Menu size={16} />
-          <span>More</span>
-        </button>
-      </nav>
+          {MOBILE_DOCK_TABS.map((tabId) => {
+            const item = NAV_ITEMS.find((n) => n.id === tabId)!;
+            const Icon = item.icon;
+            const active = activeTab === tabId;
+            return (
+              <motion.button
+                key={tabId}
+                type="button"
+                whileTap={reduceMotion ? undefined : { scale: 0.9 }}
+                transition={{ duration: 0.1 }}
+                onClick={() => handleNavigate(tabId)}
+                className={`relative flex flex-col items-center justify-center gap-0.5 rounded-xl py-2 font-mono text-[10px] transition-colors duration-150 ${
+                  active ? "font-semibold text-brand" : "text-muted hover:text-fg"
+                }`}
+              >
+                {active && (
+                  <>
+                    <motion.span
+                      layoutId="mobile-dock-pill"
+                      transition={DOCK_SPRING}
+                      className="absolute inset-0 -z-10 rounded-xl border border-brand/30 bg-brand/[0.16]"
+                    />
+                    <motion.span
+                      layoutId="mobile-dock-bar"
+                      transition={DOCK_SPRING}
+                      className="absolute top-0.5 h-[2.5px] w-7 rounded-full bg-brand"
+                    />
+                  </>
+                )}
+                <motion.span
+                  animate={
+                    reduceMotion
+                      ? undefined
+                      : { y: active ? -1 : 0, scale: active ? 1.08 : 1 }
+                  }
+                  transition={DOCK_SPRING}
+                  className="flex items-center justify-center"
+                >
+                  <Icon size={16} />
+                </motion.span>
+                <span className="truncate">{item.shortLabel}</span>
+              </motion.button>
+            );
+          })}
+          {(() => {
+            const moreActive = !MOBILE_DOCK_TABS.includes(activeTab);
+            return (
+              <motion.button
+                type="button"
+                whileTap={reduceMotion ? undefined : { scale: 0.9 }}
+                transition={{ duration: 0.1 }}
+                onClick={() => setSidebarOpen(true)}
+                className={`relative flex flex-col items-center justify-center gap-0.5 rounded-xl py-2 font-mono text-[10px] transition-colors duration-150 ${
+                  moreActive ? "font-semibold text-brand" : "text-muted hover:text-fg"
+                }`}
+              >
+                {moreActive && (
+                  <>
+                    <motion.span
+                      layoutId="mobile-dock-pill"
+                      transition={DOCK_SPRING}
+                      className="absolute inset-0 -z-10 rounded-xl border border-brand/30 bg-brand/[0.16]"
+                    />
+                    <motion.span
+                      layoutId="mobile-dock-bar"
+                      transition={DOCK_SPRING}
+                      className="absolute top-0.5 h-[2.5px] w-7 rounded-full bg-brand"
+                    />
+                  </>
+                )}
+                <motion.span
+                  animate={
+                    reduceMotion
+                      ? undefined
+                      : { y: moreActive ? -1 : 0, scale: moreActive ? 1.08 : 1 }
+                  }
+                  transition={DOCK_SPRING}
+                  className="flex items-center justify-center"
+                >
+                  <Menu size={16} />
+                </motion.span>
+                <span>More</span>
+              </motion.button>
+            );
+          })()}
+        </nav>
+      </LayoutGroup>
 
       <CommandPalette
         open={cmdOpen}
