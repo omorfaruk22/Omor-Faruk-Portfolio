@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SnakeBackground from "@/components/SnakeBackground";
 import AdminApp from "@/components/admin/AdminApp";
 import { getAdminEmail, getAdminSession, isUsingDefaultPassword } from "@/lib/auth";
 import { getPortfolioData, getStorageBackend } from "@/lib/portfolio-store";
@@ -20,13 +21,16 @@ export default async function AdminPage() {
   const defaultEmail = getAdminEmail();
 
   return (
-    <AdminApp
-      initialAuthenticated={Boolean(session)}
-      initialUser={session?.sub ?? null}
-      defaultEmail={defaultEmail}
-      initialUsingDefaultPassword={usingDefaultPassword}
-      storageBackend={storageBackend}
-      initialData={data}
-    />
+    <>
+      <SnakeBackground />
+      <AdminApp
+        initialAuthenticated={Boolean(session)}
+        initialUser={session?.sub ?? null}
+        defaultEmail={defaultEmail}
+        initialUsingDefaultPassword={usingDefaultPassword}
+        storageBackend={storageBackend}
+        initialData={data}
+      />
+    </>
   );
 }

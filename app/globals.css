@@ -55,18 +55,13 @@ a, button {
 
 .spark {
   position: absolute;
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 1px;
   background: #22C55E;
-  box-shadow: 0 0 8px 1px rgba(34,197,94,.75);
+  box-shadow: 0 0 10px 2px rgba(34,197,94,.85);
   will-change: transform;
   contain: strict;
-}
-@media (max-width: 767px) {
-  .spark {
-    box-shadow: 0 0 4px rgba(34,197,94,.65);
-  }
 }
 
 .soon {

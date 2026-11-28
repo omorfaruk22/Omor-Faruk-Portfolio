@@ -10,7 +10,7 @@ export default function SnakeBackground() {
     if (!layer || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const isMobile = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
-    const count = isMobile ? 6 : 14;
+    const count = isMobile ? 12 : 20;
     const made: HTMLSpanElement[] = [];
     const animations: Animation[] = [];
 
