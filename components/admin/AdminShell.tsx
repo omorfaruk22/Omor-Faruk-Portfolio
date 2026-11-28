@@ -96,6 +96,7 @@ export default function AdminShell({
   userEmail,
   storageBackend,
   usingDefaultPassword,
+  animateEntrance = false,
   onPasswordChanged,
   onLogout,
 }: {
@@ -103,6 +104,7 @@ export default function AdminShell({
   userEmail: string;
   storageBackend: StorageBackend;
   usingDefaultPassword: boolean;
+  animateEntrance?: boolean;
   onPasswordChanged: () => void;
   onLogout: () => void;
 }) {
@@ -384,9 +386,14 @@ export default function AdminShell({
       />
 
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 shrink-0 border-r border-brand/15 bg-ink-2/95 lg:sticky lg:top-0 lg:block lg:h-screen">
+      <motion.aside
+        initial={animateEntrance && !reduceMotion ? { opacity: 0, x: -24 } : false}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+        className="hidden w-64 shrink-0 border-r border-brand/15 bg-ink-2/95 lg:sticky lg:top-0 lg:block lg:h-screen"
+      >
         <LayoutGroup id="desktop-sidebar">{SidebarContent}</LayoutGroup>
-      </aside>
+      </motion.aside>
 
       {/* Mobile Drawer */}
       <AnimatePresence>
@@ -414,8 +421,10 @@ export default function AdminShell({
 
       {/* Main Content */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header
-          style={{ transform: "translateZ(0)" }}
+        <motion.header
+          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: -16 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.34, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
           className="sticky top-0 z-30 flex h-16 items-center justify-between gap-2 border-b border-brand/15 bg-ink/[0.97] px-3.5 sm:px-6 lg:bg-ink/90 lg:backdrop-blur-md"
         >
           <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
@@ -496,9 +505,14 @@ export default function AdminShell({
               Live <ExternalLink size={12} />
             </Link>
           </div>
-        </header>
+        </motion.header>
 
-        <main className="mx-auto w-full max-w-5xl flex-1 px-3.5 pb-24 pt-5 sm:p-6 lg:p-8 lg:pb-12">
+        <motion.main
+          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: 24, scale: 0.985 } : false}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.44, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+          className="mx-auto w-full max-w-5xl flex-1 px-3.5 pb-24 pt-5 sm:p-6 lg:p-8 lg:pb-12"
+        >
           {usingDefaultPassword && activeTab !== "settings" && (
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
               <div className="flex min-w-0 items-center gap-2.5">
@@ -611,14 +625,16 @@ export default function AdminShell({
               </motion.div>
             </AnimatePresence>
           </div>
-        </main>
+        </motion.main>
       </div>
 
       {/* Mobile Native-Style Bottom Floating Dock (120Hz spring sliding indicator, zero blur lag) */}
       <LayoutGroup id="mobile-bottom-dock">
-        <nav
+        <motion.nav
           aria-label="Mobile quick navigation"
-          style={{ transform: "translateZ(0)" }}
+          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: 52 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 360, damping: 28, delay: 0.14 }}
           className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 gap-1 rounded-2xl border border-brand/30 bg-ink-2/[0.98] p-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.75)] lg:hidden"
         >
           {MOBILE_DOCK_TABS.map((tabId) => {
@@ -706,7 +722,7 @@ export default function AdminShell({
               </motion.button>
             );
           })()}
-        </nav>
+        </motion.nav>
       </LayoutGroup>
 
       <CommandPalette

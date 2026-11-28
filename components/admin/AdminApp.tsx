@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import AdminLogin from "./AdminLogin";
 import AdminShell from "./AdminShell";
 import { adminFetch, getStoredToken } from "./api";
@@ -20,7 +21,9 @@ export default function AdminApp({
   storageBackend: StorageBackend;
   initialData: PortfolioData;
 }) {
+  const reduceMotion = useReducedMotion();
   const [authenticated, setAuthenticated] = useState(initialAuthenticated);
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
   const [user, setUser] = useState(initialUser ?? defaultEmail);
   const [usingDefaultPassword, setUsingDefaultPassword] = useState(initialUsingDefaultPassword);
   const [data, setData] = useState<PortfolioData>(initialData);
@@ -53,27 +56,51 @@ export default function AdminApp({
     } catch {
       // use initialData fallback
     }
+    setJustLoggedIn(true);
     setAuthenticated(true);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    }
   };
 
-  if (!authenticated) {
-    return (
-      <AdminLogin
-        defaultEmail={defaultEmail}
-        usingDefaultPassword={usingDefaultPassword}
-        onSuccess={handleLoginSuccess}
-      />
-    );
-  }
-
   return (
-    <AdminShell
-      initialData={data}
-      userEmail={user}
-      storageBackend={storageBackend}
-      usingDefaultPassword={usingDefaultPassword}
-      onPasswordChanged={() => setUsingDefaultPassword(false)}
-      onLogout={() => setAuthenticated(false)}
-    />
+    <AnimatePresence mode="wait" initial={false}>
+      {!authenticated ? (
+        <motion.div
+          key="admin-login-view"
+          initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={reduceMotion ? undefined : { opacity: 0, y: -18, scale: 0.95 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <AdminLogin
+            defaultEmail={defaultEmail}
+            usingDefaultPassword={usingDefaultPassword}
+            onSuccess={handleLoginSuccess}
+          />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="admin-dashboard-view"
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={reduceMotion ? undefined : { opacity: 0 }}
+          transition={{ duration: 0.24, ease: "easeOut" }}
+        >
+          <AdminShell
+            initialData={data}
+            userEmail={user}
+            storageBackend={storageBackend}
+            usingDefaultPassword={usingDefaultPassword}
+            animateEntrance={justLoggedIn}
+            onPasswordChanged={() => setUsingDefaultPassword(false)}
+            onLogout={() => {
+              setJustLoggedIn(false);
+              setAuthenticated(false);
+            }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

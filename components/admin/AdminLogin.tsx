@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
+  CheckCircle2,
   Eye,
   EyeOff,
   KeyRound,
@@ -29,6 +30,7 @@ export default function AdminLogin({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
   const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,10 +50,11 @@ export default function AdminLogin({
       if (res.token) {
         setStoredToken(res.token);
       }
+      setUnlocked(true);
+      await new Promise((r) => setTimeout(r, 260));
       onSuccess(res.user, res.usingDefaultPassword);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed.");
-    } finally {
       setLoading(false);
     }
   };
@@ -161,10 +164,16 @@ export default function AdminLogin({
 
               <button
                 type="submit"
-                disabled={loading}
-                className="btn-primary w-full rounded-xl py-3 font-mono transition-[background-color,box-shadow] duration-200 hover:shadow-[0_0_28px_rgba(34,197,94,0.5)]"
+                disabled={loading || unlocked}
+                className={`btn-primary w-full rounded-xl py-3 font-mono transition-[background-color,box-shadow,transform] duration-200 hover:shadow-[0_0_28px_rgba(34,197,94,0.5)] ${
+                  unlocked ? "scale-[1.01] shadow-[0_0_36px_rgba(34,197,94,0.65)]" : ""
+                }`}
               >
-                {loading ? (
+                {unlocked ? (
+                  <>
+                    <CheckCircle2 size={16} /> Access Granted — Entering...
+                  </>
+                ) : loading ? (
                   <>
                     <Loader2 size={16} className="animate-spin" /> Verifying session...
                   </>
