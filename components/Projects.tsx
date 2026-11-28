@@ -15,7 +15,7 @@ export default function Projects() {
   return (
     <Section
       id="projects"
-      title="Featured Projects"
+      title="Projects"
       badge={
         <span className="rounded-full border border-brand/25 px-3 py-1 font-mono text-xs text-muted">
           Showing {homeProjects.length} of {allProjects.length} projects
