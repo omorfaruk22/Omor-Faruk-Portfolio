@@ -39,7 +39,7 @@ export default function Contact() {
   return (
     <Section id="contact" title="Let's Build Something Together.">
       <div className="grid w-full min-w-0 gap-8 md:grid-cols-2 md:gap-10">
-        <Reveal className="min-w-0 space-y-3 break-words font-mono text-sm">
+        <Reveal from="left" className="min-w-0 space-y-3 break-words font-mono text-sm">
           <StatusLabel />
           <p className="break-words">
             <span className="text-brand">email</span> —{" "}
@@ -64,7 +64,7 @@ export default function Contact() {
             <span className="text-brand">location</span> — {profile.location}
           </p>
         </Reveal>
-        <Reveal className="min-w-0">
+        <Reveal from="right" delay={0.12} className="min-w-0">
           <form onSubmit={submit} className="space-y-3">
             <input required placeholder="Name" value={f.name} onChange={set("name")} className={field} />
             <input

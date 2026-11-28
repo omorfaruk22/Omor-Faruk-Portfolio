@@ -9,6 +9,7 @@ export default function CinematicSplash({
   brandName,
   subtitle,
   durationMs = 2000,
+  onExitStart,
   onComplete,
 }: {
   active: boolean;
@@ -16,6 +17,7 @@ export default function CinematicSplash({
   brandName: string;
   subtitle?: string;
   durationMs?: number;
+  onExitStart?: () => void;
   onComplete?: () => void;
 }) {
   const reduceMotion = useReducedMotion();
@@ -31,6 +33,7 @@ export default function CinematicSplash({
     if (reduceMotion) {
       setProgress(100);
       setPhase("done");
+      onExitStart?.();
       onComplete?.();
       return;
     }
@@ -60,6 +63,7 @@ export default function CinematicSplash({
     exitTimer = setTimeout(() => {
       setProgress(100);
       setPhase("exiting");
+      onExitStart?.();
     }, fillMs);
 
     doneTimer = setTimeout(() => {
@@ -72,7 +76,7 @@ export default function CinematicSplash({
       if (exitTimer) clearTimeout(exitTimer);
       if (doneTimer) clearTimeout(doneTimer);
     };
-  }, [active, durationMs, reduceMotion, onComplete]);
+  }, [active, durationMs, reduceMotion, onExitStart, onComplete]);
 
   const show = active && phase !== "done";
 

@@ -1,14 +1,16 @@
 "use client";
 import { useMemo, useRef } from "react";
-import { useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useTypewriter } from "@/hooks/useTypewriter";
 import { useApp } from "./Providers";
 
 export default function Terminal() {
-  const { data, option } = useApp();
+  const { data, option, introReady } = useApp();
   const { profile, skills } = data;
+  const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const shouldStart = inView && (introReady || Boolean(reduceMotion));
 
   const transcript = useMemo(() => {
     const currentEdu =
@@ -46,13 +48,19 @@ export default function Terminal() {
     return lines.join("\n");
   }, [profile, skills, option]);
 
-  const typed = useTypewriter(transcript, 12, inView);
+  const typed = useTypewriter(transcript, 12, shouldStart);
   const lines = typed.split("\n");
   const handle = profile.name.split(" ")[0]?.toLowerCase() || "dev";
 
   return (
     <section className="mx-auto w-full max-w-6xl overflow-x-clip px-4 pb-10 sm:px-5 md:px-8">
-      <div ref={ref} className="card w-full min-w-0 max-w-full overflow-hidden shadow-glow">
+      <motion.div
+        ref={ref}
+        initial={reduceMotion ? false : { opacity: 0, y: 46 }}
+        animate={shouldStart ? { opacity: 1, y: 0 } : { opacity: 0, y: 46 }}
+        transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+        className="card w-full min-w-0 max-w-full overflow-hidden shadow-glow"
+      >
         <div className="flex items-center gap-2 border-b border-brand/10 bg-black/30 px-4 py-2.5 font-mono text-xs text-muted">
           <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-red-500/70" />
           <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-yellow-500/70" />
@@ -73,7 +81,7 @@ export default function Terminal() {
             </div>
           ))}
         </pre>
-      </div>
+      </motion.div>
     </section>
   );
 }

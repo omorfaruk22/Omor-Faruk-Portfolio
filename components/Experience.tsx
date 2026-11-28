@@ -41,9 +41,9 @@ export default function Experience() {
         </Reveal>
       ) : (
         <ol className="ml-2 space-y-8 border-l border-brand/30">
-          {experience.map((x) => (
+          {experience.map((x, i) => (
             <li key={x.id || `${x.company}-${x.position}`} className="relative pl-6">
-              <Reveal>
+              <Reveal from={i % 2 === 0 ? "left" : "right"} delay={i * 0.08}>
                 <span className="absolute -left-[7px] top-1.5 h-3 w-3 rounded-full bg-brand shadow-glow" />
                 <div className="card min-w-0 border-brand/20 p-4 sm:p-6">
                   <div className="flex flex-wrap items-center justify-between gap-2">

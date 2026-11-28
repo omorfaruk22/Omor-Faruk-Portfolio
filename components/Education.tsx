@@ -10,9 +10,9 @@ export default function Education() {
   return (
     <Section id="education" title="Education">
       <ol className="ml-2 space-y-8 border-l border-brand/30">
-        {education.map((e) => (
+        {education.map((e, i) => (
           <li key={e.id || e.title} className="relative pl-6">
-            <Reveal>
+            <Reveal from={i % 2 === 0 ? "left" : "right"} delay={i * 0.08}>
               <span
                 className={`absolute -left-[7px] top-1.5 h-3 w-3 rounded-full bg-brand ${
                   e.current ? "shadow-glow" : ""

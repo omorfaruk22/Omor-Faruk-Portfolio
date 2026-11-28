@@ -23,12 +23,12 @@ export default function Projects() {
       }
     >
       <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <Reveal className="max-w-2xl text-sm leading-relaxed text-muted">
+        <Reveal from="left" className="max-w-2xl text-sm leading-relaxed text-muted">
           A curated highlight of my featured applications. Open any project for its
           technology stack, implementation highlights, challenges and future plans,
           or browse the full archive on the projects page.
         </Reveal>
-        <Reveal>
+        <Reveal from="right" delay={0.1}>
           <Link
             href="/projects"
             className="btn-ghost shrink-0 font-mono !px-4 !py-2.5 !text-xs"

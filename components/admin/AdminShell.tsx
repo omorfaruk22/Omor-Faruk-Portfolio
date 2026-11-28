@@ -96,7 +96,7 @@ export default function AdminShell({
   userEmail,
   storageBackend,
   usingDefaultPassword,
-  animateEntrance = false,
+  dashboardReady = true,
   onPasswordChanged,
   onLogout,
 }: {
@@ -104,17 +104,19 @@ export default function AdminShell({
   userEmail: string;
   storageBackend: StorageBackend;
   usingDefaultPassword: boolean;
-  animateEntrance?: boolean;
+  dashboardReady?: boolean;
   onPasswordChanged: () => void;
   onLogout: () => void;
 }) {
   const router = useRouter();
   const { setData: setGlobalData } = useApp();
   const reduceMotion = useReducedMotion();
+  const ready = dashboardReady || Boolean(reduceMotion);
 
   const [data, setData] = useState<PortfolioData>(initialData);
   const [activeTab, setActiveTab] = useState<AdminTabId>("overview");
   const [navDir, setNavDir] = useState<number>(1);
+  const [hasSwitchedTab, setHasSwitchedTab] = useState(false);
   const [pendingOpenNew, setPendingOpenNew] = useState<AdminTabId | null>(null);
   const [pendingEditProjectId, setPendingEditProjectId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -157,6 +159,7 @@ export default function AdminShell({
         const prevIdx = TAB_ORDER.indexOf(activeTab);
         const nextIdx = TAB_ORDER.indexOf(tab);
         setNavDir(nextIdx >= prevIdx ? 1 : -1);
+        setHasSwitchedTab(true);
         setActiveTab(tab);
         if (typeof window !== "undefined" && window.scrollY > 0) {
           window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
@@ -174,6 +177,7 @@ export default function AdminShell({
         const prevIdx = TAB_ORDER.indexOf(activeTab);
         const nextIdx = TAB_ORDER.indexOf("projects");
         setNavDir(nextIdx >= prevIdx ? 1 : -1);
+        setHasSwitchedTab(true);
         setActiveTab("projects");
         if (typeof window !== "undefined" && window.scrollY > 0) {
           window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
@@ -385,11 +389,11 @@ export default function AdminShell({
         className="pointer-events-none fixed -top-36 right-[12%] -z-10 h-[440px] w-[440px] rounded-full"
       />
 
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar: slides smoothly in from LEFT */}
       <motion.aside
-        initial={animateEntrance && !reduceMotion ? { opacity: 0, x: -28 } : false}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.65, delay: 1.4, ease: [0.22, 1, 0.36, 1] }}
+        initial={reduceMotion ? false : { opacity: 0, x: -48 }}
+        animate={ready ? { opacity: 1, x: 0 } : { opacity: 0, x: -48 }}
+        transition={{ duration: 1.0, delay: 0.06, ease: [0.16, 1, 0.3, 1] }}
         className="hidden w-64 shrink-0 border-r border-brand/15 bg-ink-2/95 lg:sticky lg:top-0 lg:block lg:h-screen"
       >
         <LayoutGroup id="desktop-sidebar">{SidebarContent}</LayoutGroup>
@@ -422,9 +426,9 @@ export default function AdminShell({
       {/* Main Content */}
       <div className="flex min-w-0 flex-1 flex-col">
         <motion.header
-          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: -18 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.58, delay: 1.44, ease: [0.22, 1, 0.36, 1] }}
+          initial={reduceMotion ? false : { opacity: 0, y: -38 }}
+          animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: -38 }}
+          transition={{ duration: 0.95, delay: 0.04, ease: [0.16, 1, 0.3, 1] }}
           className="sticky top-0 z-30 flex h-16 items-center justify-between gap-2 border-b border-brand/15 bg-ink/[0.97] px-3.5 sm:px-6 lg:bg-ink/90 lg:backdrop-blur-md"
         >
           <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
@@ -507,12 +511,7 @@ export default function AdminShell({
           </div>
         </motion.header>
 
-        <motion.main
-          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: 28, scale: 0.982 } : false}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.65, delay: 1.48, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto w-full max-w-5xl flex-1 px-3.5 pb-24 pt-5 sm:p-6 lg:p-8 lg:pb-12"
-        >
+        <main className="mx-auto w-full max-w-5xl flex-1 px-3.5 pb-24 pt-5 sm:p-6 lg:p-8 lg:pb-12">
           {usingDefaultPassword && activeTab !== "settings" && (
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
               <div className="flex min-w-0 items-center gap-2.5">
@@ -532,21 +531,28 @@ export default function AdminShell({
           )}
 
           <div className="relative min-w-0 overflow-x-clip">
-            <AnimatePresence mode="popLayout" initial={false} custom={navDir}>
-              <motion.div
-                key={activeTab}
-                custom={navDir}
-                variants={reduceMotion ? undefined : pageVariants}
-                initial={reduceMotion ? false : "enter"}
-                animate="center"
-                exit={reduceMotion ? undefined : "exit"}
-                transition={{
-                  x: { type: "spring", stiffness: 420, damping: 36, mass: 0.75 },
-                  opacity: { duration: 0.16, ease: "easeOut" },
-                  scale: { duration: 0.2, ease: [0.22, 1, 0.36, 1] },
-                }}
-                className="min-w-0 will-change-transform"
-              >
+            {ready && (
+              <AnimatePresence mode="popLayout" initial={false} custom={navDir}>
+                <motion.div
+                  key={activeTab}
+                  custom={navDir}
+                  variants={reduceMotion ? undefined : pageVariants}
+                  initial={reduceMotion ? false : hasSwitchedTab ? "enter" : { opacity: 0 }}
+                  animate="center"
+                  exit={reduceMotion ? undefined : "exit"}
+                  transition={{
+                    x: { type: "spring", stiffness: 360, damping: 34, mass: 0.8 },
+                    opacity: { duration: 0.2, ease: "easeOut" },
+                    scale: { duration: 0.24, ease: [0.16, 1, 0.3, 1] },
+                  }}
+                  className={`min-w-0 ${
+                    !hasSwitchedTab
+                      ? "tab-stage-boot"
+                      : navDir >= 0
+                        ? "tab-stage-fwd"
+                        : "tab-stage-bwd"
+                  }`}
+                >
               {activeTab === "overview" && (
                 <OverviewTab
                   data={data}
@@ -622,19 +628,20 @@ export default function AdminShell({
                   onNotify={notify}
                 />
               )}
-              </motion.div>
-            </AnimatePresence>
+                </motion.div>
+              </AnimatePresence>
+            )}
           </div>
-        </motion.main>
+        </main>
       </div>
 
-      {/* Mobile Native-Style Bottom Floating Dock (120Hz spring sliding indicator, zero blur lag) */}
+      {/* Mobile Native-Style Bottom Floating Dock: rises smoothly up from BOTTOM */}
       <LayoutGroup id="mobile-bottom-dock">
         <motion.nav
           aria-label="Mobile quick navigation"
-          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: 56 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 320, damping: 28, delay: 1.54 }}
+          initial={reduceMotion ? false : { opacity: 0, y: 68 }}
+          animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 68 }}
+          transition={{ duration: 1.05, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
           className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 gap-1 rounded-2xl border border-brand/30 bg-ink-2/[0.98] p-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.75)] lg:hidden"
         >
           {MOBILE_DOCK_TABS.map((tabId) => {

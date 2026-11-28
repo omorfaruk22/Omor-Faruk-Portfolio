@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, useReducedMotion } from "framer-motion";
 import { Lock, Menu, X } from "lucide-react";
 import StatusDropdown from "./StatusDropdown";
 import { useApp } from "./Providers";
@@ -19,12 +20,15 @@ const links = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const { data, setResumeOpen } = useApp();
+  const { data, setResumeOpen, introReady } = useApp();
+  const reduceMotion = useReducedMotion();
   const { profile } = data;
 
   return (
-    <header
-      style={{ transform: "translateZ(0)" }}
+    <motion.header
+      initial={reduceMotion ? false : { opacity: 0, y: -48 }}
+      animate={introReady || reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: -48 }}
+      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       className="sticky top-0 z-50 w-full border-b border-brand/10 bg-ink/[0.97] lg:bg-ink/88 lg:backdrop-blur-md"
     >
       <nav
@@ -116,6 +120,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </header>
+    </motion.header>
   );
 }

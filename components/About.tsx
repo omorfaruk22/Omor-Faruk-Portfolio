@@ -28,7 +28,7 @@ export default function About() {
   return (
     <Section id="about" title="About">
       <div className="grid w-full min-w-0 gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.75fr)] md:gap-8">
-        <Reveal className="min-w-0">
+        <Reveal from="left" className="min-w-0">
           <div className="card w-full min-w-0 overflow-hidden border-brand/20 p-5 sm:p-6">
             <p className="font-mono text-xs text-brand">{"// who I am"}</p>
             <StatusLabel className="mt-3" />
@@ -60,7 +60,7 @@ export default function About() {
           </div>
         </Reveal>
 
-        <Reveal className="min-w-0">
+        <Reveal from="right" delay={0.12} className="min-w-0">
           <div className="card w-full min-w-0 space-y-4 overflow-hidden border-brand/15 p-5 text-sm leading-relaxed text-muted sm:p-6 sm:text-base">
             {profile.bio.map((p, i) => (
               <p key={i} className="break-words">

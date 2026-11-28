@@ -12,6 +12,7 @@ type Ctx = {
   option: AvailabilityOption;
   resumeOpen: boolean;
   setResumeOpen: (v: boolean) => void;
+  introReady: boolean;
 };
 
 const AppCtx = createContext<Ctx | null>(null);
@@ -43,6 +44,8 @@ export default function Providers({
   const [resumeOpen, setResumeOpen] = useState(false);
   // Plays once on every fresh visit or browser refresh of the public portfolio (skips /admin)
   const [showIntro, setShowIntro] = useState(!isAdminRoute);
+  // Triggers the 2-second choreographed content entrance right as the splash lifts
+  const [introReady, setIntroReady] = useState(Boolean(isAdminRoute));
 
   // Sync if server sends refreshed initialData (e.g., after router.refresh())
   useEffect(() => {
@@ -51,13 +54,19 @@ export default function Providers({
 
   // If user navigates to /admin mid-intro, dismiss portfolio intro immediately
   useEffect(() => {
-    if (isAdminRoute && showIntro) {
+    if (isAdminRoute && (showIntro || !introReady)) {
       setShowIntro(false);
+      setIntroReady(true);
     }
-  }, [isAdminRoute, showIntro]);
+  }, [isAdminRoute, showIntro, introReady]);
+
+  const handleIntroExitStart = useCallback(() => {
+    setIntroReady(true);
+  }, []);
 
   const handleIntroComplete = useCallback(() => {
     setShowIntro(false);
+    setIntroReady(true);
   }, []);
 
   const refreshData = useCallback(async () => {
@@ -88,6 +97,7 @@ export default function Providers({
         option,
         resumeOpen,
         setResumeOpen,
+        introReady,
       }}
     >
       <CinematicSplash
@@ -96,6 +106,7 @@ export default function Providers({
         brandName={data.profile.name}
         subtitle={data.profile.title}
         durationMs={2000}
+        onExitStart={handleIntroExitStart}
         onComplete={handleIntroComplete}
       />
       {children}

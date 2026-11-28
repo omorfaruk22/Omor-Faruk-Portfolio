@@ -12,7 +12,12 @@ export default function Connect() {
     <Section id="connect" title="Connect">
       <div className="grid w-full min-w-0 gap-4 md:grid-cols-3">
         {links.map((s, i) => (
-          <Reveal key={s.id} delay={i * 0.06} className="min-w-0">
+          <Reveal
+            key={s.id}
+            from={i % 3 === 0 ? "left" : i % 3 === 1 ? "bottom" : "right"}
+            delay={i * 0.08}
+            className="min-w-0"
+          >
             <div className="card flex h-full w-full min-w-0 flex-col justify-between gap-4 p-5 sm:p-6">
               <div className="min-w-0">
                 <p className="font-mono text-sm text-brand">{s.icon || s.id}</p>

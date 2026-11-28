@@ -16,10 +16,11 @@ export default function ProjectCard({
 }) {
   return (
     <motion.article
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.16), ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40, y: 14 }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      exit={{ opacity: 0, y: 12 }}
+      transition={{ duration: 0.62, delay: Math.min((index % 2) * 0.1, 0.2), ease: [0.16, 1, 0.3, 1] }}
       className="group card flex h-full min-w-0 flex-col overflow-hidden border-brand/15 transition-[border-color,transform] duration-200 hover:-translate-y-1 hover:border-brand/50"
     >
       <Link

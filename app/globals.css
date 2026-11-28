@@ -75,8 +75,79 @@ a, button {
   pointer-events: none;
 }
 
+/* Pure-GPU spatial assembly keyframes for Admin tab switching & boot */
+@keyframes fly-from-top {
+  from { opacity: 0; transform: translate3d(0, -28px, 0) scale(0.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes fly-from-bottom {
+  from { opacity: 0; transform: translate3d(0, 34px, 0) scale(0.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes fly-from-right {
+  from { opacity: 0; transform: translate3d(44px, 0, 0) scale(0.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes fly-from-left {
+  from { opacity: 0; transform: translate3d(-44px, 0, 0) scale(0.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* Fast spatial assembly on tab switch: every block flies in from side / top / bottom */
+.tab-stage-fwd > div > *:nth-child(1) {
+  animation: fly-from-top 0.58s cubic-bezier(0.16, 1, 0.3, 1) 0.02s backwards;
+}
+.tab-stage-fwd > div > *:nth-child(2) {
+  animation: fly-from-right 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
+}
+.tab-stage-fwd > div > *:nth-child(3) {
+  animation: fly-from-left 0.66s cubic-bezier(0.16, 1, 0.3, 1) 0.18s backwards;
+}
+.tab-stage-fwd > div > *:nth-child(4) {
+  animation: fly-from-right 0.68s cubic-bezier(0.16, 1, 0.3, 1) 0.26s backwards;
+}
+.tab-stage-fwd > div > *:nth-child(n+5) {
+  animation: fly-from-bottom 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.34s backwards;
+}
+
+.tab-stage-bwd > div > *:nth-child(1) {
+  animation: fly-from-top 0.58s cubic-bezier(0.16, 1, 0.3, 1) 0.02s backwards;
+}
+.tab-stage-bwd > div > *:nth-child(2) {
+  animation: fly-from-left 0.64s cubic-bezier(0.16, 1, 0.3, 1) 0.1s backwards;
+}
+.tab-stage-bwd > div > *:nth-child(3) {
+  animation: fly-from-right 0.66s cubic-bezier(0.16, 1, 0.3, 1) 0.18s backwards;
+}
+.tab-stage-bwd > div > *:nth-child(4) {
+  animation: fly-from-left 0.68s cubic-bezier(0.16, 1, 0.3, 1) 0.26s backwards;
+}
+.tab-stage-bwd > div > *:nth-child(n+5) {
+  animation: fly-from-bottom 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.34s backwards;
+}
+
+/* Grand 2-second choreographed assembly after Dashboard boot/login splash */
+.tab-stage-boot > div > *:nth-child(1) {
+  animation: fly-from-top 1.05s cubic-bezier(0.16, 1, 0.3, 1) 0.08s backwards;
+}
+.tab-stage-boot > div > *:nth-child(2) {
+  animation: fly-from-left 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.28s backwards;
+}
+.tab-stage-boot > div > *:nth-child(3) {
+  animation: fly-from-right 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.48s backwards;
+}
+.tab-stage-boot > div > *:nth-child(4) {
+  animation: fly-from-left 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.68s backwards;
+}
+.tab-stage-boot > div > *:nth-child(n+5) {
+  animation: fly-from-bottom 1.15s cubic-bezier(0.16, 1, 0.3, 1) 0.85s backwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .running-border-beam { animation: none; }
+  .running-border-beam,
+  .tab-stage-fwd > div > *,
+  .tab-stage-bwd > div > *,
+  .tab-stage-boot > div > * { animation: none !important; }
 }
 
 .spark {

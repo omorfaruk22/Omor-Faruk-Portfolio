@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, FolderKanban, Search, SlidersHorizontal, X } from "lucide-react";
 import ProjectCard from "./ProjectCard";
 import { useApp } from "./Providers";
@@ -9,7 +9,9 @@ import { useApp } from "./Providers";
 type SortMode = "featured" | "newest" | "alpha";
 
 export default function AllProjectsClient() {
-  const { data } = useApp();
+  const { data, introReady } = useApp();
+  const reduceMotion = useReducedMotion();
+  const ready = introReady || Boolean(reduceMotion);
   const projects = data.projects;
 
   const categories = useMemo(
@@ -58,7 +60,12 @@ export default function AllProjectsClient() {
       </Link>
 
       <div className="flex flex-col justify-between gap-6 border-b border-brand/15 pb-8 md:flex-row md:items-end">
-        <div className="min-w-0">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, x: -48 }}
+          animate={ready ? { opacity: 1, x: 0 } : { opacity: 0, x: -48 }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="min-w-0"
+        >
           <div className="inline-flex items-center gap-2 rounded-full border border-brand/25 bg-ink-2/80 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-brand">
             <FolderKanban size={13} /> Project Archive
           </div>
@@ -69,9 +76,14 @@ export default function AllProjectsClient() {
             Every application, full-stack platform, and frontend experiment I have built —
             dynamically updated whenever new work is added.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-3 gap-2 font-mono sm:gap-3">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, x: 48 }}
+          animate={ready ? { opacity: 1, x: 0 } : { opacity: 0, x: 48 }}
+          transition={{ duration: 0.9, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+          className="grid grid-cols-3 gap-2 font-mono sm:gap-3"
+        >
           <div className="card min-w-0 px-2.5 py-2.5 text-center sm:px-4 sm:py-3">
             <p className="text-lg font-bold text-brand sm:text-xl">{projects.length}</p>
             <p className="mt-0.5 truncate text-[10px] text-muted sm:text-[11px]">Total</p>
@@ -84,10 +96,15 @@ export default function AllProjectsClient() {
             <p className="text-lg font-bold text-fg sm:text-xl">{uniqueTechCount}</p>
             <p className="mt-0.5 truncate text-[10px] text-muted sm:text-[11px]">Tech</p>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Search, Category Filter & Sort Toolbar */}
+      <motion.div
+        initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+        animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+        transition={{ duration: 0.72, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
+      >
       <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <label className="relative block w-full lg:max-w-md">
           <Search
@@ -160,6 +177,7 @@ export default function AllProjectsClient() {
           </button>
         ))}
       </div>
+      </motion.div>
 
       {/* Projects Grid */}
       {filtered.length === 0 ? (
