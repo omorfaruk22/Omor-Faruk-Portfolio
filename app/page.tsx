@@ -14,13 +14,15 @@ import SnakeBackground from "@/components/SnakeBackground";
 import ResumeModal from "@/components/ResumeModal";
 import ScrollProgress from "@/components/ScrollProgress";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <>
       <ScrollProgress />
       <SnakeBackground />
       <Navbar />
-      <main className="relative z-10">
+      <main className="relative z-10 w-full max-w-full overflow-x-clip">
         <Hero />
         <Terminal />
         <About />

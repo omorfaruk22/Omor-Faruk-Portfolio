@@ -2,39 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
-html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+:root {
+  color-scheme: dark;
+  --font-inter: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+  overflow-x: clip;
+  max-width: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
 body {
   background-color: #050805;
   color: #F0FDF4;
-  overflow-x: hidden;
+  overflow-x: clip;
+  max-width: 100%;
   background-image:
-    linear-gradient(rgba(34,197,94,.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34,197,94,.06) 1px, transparent 1px);
+    linear-gradient(rgba(34,197,94,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,197,94,.055) 1px, transparent 1px);
   background-size: 36px 36px;
 }
+a, button {
+  touch-action: manipulation;
+}
 ::selection { background: rgba(34,197,94,.35); }
-::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar { width: 10px; height: 8px; }
 ::-webkit-scrollbar-track { background: #050805; }
 ::-webkit-scrollbar-thumb { background: #15803D; border-radius: 6px; }
 
 @layer components {
-  .card { @apply rounded-xl border border-brand/15 bg-ink-2; }
-  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition; }
+  .card {
+    @apply rounded-xl border border-brand/15 bg-ink-2;
+    contain: layout style;
+  }
+  /* High-FPS glass aesthetic without expensive per-frame mobile backdrop-filter blur */
+  .glass-card {
+    @apply rounded-2xl border border-brand/20;
+    background: linear-gradient(165deg, rgba(13, 25, 15, 0.96) 0%, rgba(7, 14, 8, 0.98) 100%);
+    box-shadow: inset 0 1px 0 rgba(34, 197, 94, 0.16), 0 10px 24px -14px rgba(0, 0, 0, 0.72);
+    contain: layout style;
+  }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-semibold transition-colors duration-150; }
   .btn-primary { @apply btn bg-brand text-ink-3 hover:bg-brand-600; }
   .btn-ghost { @apply btn border border-brand/40 text-fg hover:border-brand hover:bg-brand/10; }
-  .nav-link { @apply relative pb-0.5 text-muted transition hover:text-fg after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brand after:transition-all hover:after:w-full; }
+  .nav-link { @apply relative pb-0.5 text-muted transition-colors duration-150 hover:text-fg after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-brand after:transition-[width] after:duration-200 hover:after:w-full; }
 }
 
 .cursor { display: inline-block; width: 8px; height: 1.05em; background: #22C55E; vertical-align: -2px; animation: blink 1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
-.spark { position: absolute; width: 6px; height: 6px; border-radius: 1px; background: #22C55E; box-shadow: 0 0 10px 2px rgba(34,197,94,.85); }
+.spark {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: #22C55E;
+  box-shadow: 0 0 8px 1px rgba(34,197,94,.75);
+  will-change: transform;
+  contain: strict;
+}
+@media (max-width: 767px) {
+  .spark {
+    box-shadow: 0 0 4px rgba(34,197,94,.65);
+  }
+}
 
-.soon { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(34,197,94,.45); color: #22C55E; background: linear-gradient(90deg, rgba(34,197,94,.08), rgba(34,197,94,.22), rgba(34,197,94,.08)); background-size: 200% 100%; animation: shimmer 2.4s linear infinite; }
-.soon i { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; animation: pulse 1.2s ease-in-out infinite; }
-@keyframes shimmer { to { background-position: -200% 0; } }
-@keyframes pulse { 50% { transform: scale(1.6); opacity: .4; } }
+.soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(34,197,94,.45);
+  color: #22C55E;
+  background: linear-gradient(90deg, rgba(34,197,94,.08), rgba(34,197,94,.18), rgba(34,197,94,.08));
+}
+.soon i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22C55E;
+  will-change: transform, opacity;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse { 50% { transform: scale(1.5); opacity: .45; } }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

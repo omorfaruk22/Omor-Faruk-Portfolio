@@ -5,14 +5,22 @@ A responsive personal portfolio for **Omor Faruk**, a Full Stack Web Developer a
 ## Features
 
 - Responsive navigation for desktop, tablet, and mobile screens
-- Hero section with profile photo, professional designation, social status, and resume download
+- Hero section with profile photo, professional designation, live admin-managed status, and resume download
 - About section covering background, interests, and development journey
 - Categorized skills, education, services, and experience sections
-- Four featured project cards with category filtering
-- Individual project detail pages with technology stack, implementation highlights, challenges, future improvements, live demo, and GitHub repository links
-- Contact form that opens the visitor's email application with a pre-filled message
+- Home page highlights **4 featured project cards** with a direct link to the dedicated `/projects` archive page
+- Dedicated `/projects` page listing **all projects** with search, category filters, and sorting
+- Individual `/projects/[slug]` detail pages (automatically available for every newly added project) with technology stack, highlights, challenges, future improvements, live demo, and GitHub links
+- Full **Admin Dashboard** (`/admin`) with authentication to manage everything:
+  - Projects (add, edit, delete, reorder, upload images, choose featured homepage projects)
+  - Availability & Live Status (switch active status, add custom statuses with colors & notes, edit Hero status headline)
+  - Experience timeline entries
+  - Profile, About bio, profile photo, and resume PDF
+  - Skills categories, Education timeline, Services, and Social links
+  - Password management, JSON backup/restore, and reset to defaults
+- Contact form with customizable endpoint
 - Social profile links and GitHub contribution chart
-- SEO metadata, sitemap, robots file, and structured data
+- Dynamic SEO metadata, sitemap, robots file, and structured data
 - Animated interface built with Framer Motion, with reduced-motion support
 
 ## Featured Projects
@@ -124,6 +132,16 @@ The project is ready to deploy on Vercel.
 4. Every new push to the connected branch triggers a fresh deployment.
 
 For production SEO metadata and sitemap links, set `NEXT_PUBLIC_SITE_URL` in Vercel to the deployed site URL.
+
+### Admin Dashboard & Cloud Persistence on Vercel
+
+Open `/admin` to manage your portfolio content.
+
+- **Local development:** Changes persist automatically to `data/portfolio-store.json`. Default first-time login is `admin` (or your email) / `admin123` — change it immediately in **Settings**.
+- **Vercel production:** Because serverless filesystems are read-only, configure environment variables (see `.env.example`):
+  - `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_SECRET` for admin authentication
+  - `MONGODB_URI` (MongoDB Atlas) **or** `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` for persistent cloud storage
+  - Optional: `IMGBB_API_KEY` for external image hosting on uploads
 
 ## Contact
 

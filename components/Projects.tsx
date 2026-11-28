@@ -1,23 +1,16 @@
-'use client';
-import { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, Github, ExternalLink, Layers3, Search, X } from 'lucide-react';
-import Section from './Section';
-import Reveal from './Reveal';
-import { isPlaceholderUrl, projects } from '@/data/projects';
+"use client";
+import Link from "next/link";
+import { ArrowRight, FolderKanban } from "lucide-react";
+import Section from "./Section";
+import Reveal from "./Reveal";
+import ProjectCard from "./ProjectCard";
+import { useApp } from "./Providers";
+import { getHomeProjects } from "@/lib/default-data";
 
 export default function Projects() {
-  const cats = useMemo(
-    () => ['All', ...Array.from(new Set(projects.map(p => p.category)))],
-    [],
-  );
-  const [cat, setCat] = useState('All');
-  const [query, setQuery] = useState('');
-  const shown = projects.filter(p => {
-    const matchesCategory = cat === 'All' || p.category === cat;
-    const searchable = [p.title, p.description, p.category, ...p.technologies].join(' ').toLowerCase();
-    return matchesCategory && searchable.includes(query.trim().toLowerCase());
-  });
+  const { data } = useApp();
+  const allProjects = data.projects;
+  const homeProjects = getHomeProjects(allProjects, 4);
 
   return (
     <Section
@@ -25,146 +18,64 @@ export default function Projects() {
       title="Featured Projects"
       badge={
         <span className="rounded-full border border-brand/25 px-3 py-1 font-mono text-xs text-muted">
-          {shown.length} of {projects.length} projects
+          Showing {homeProjects.length} of {allProjects.length} projects
         </span>
       }
     >
-      <Reveal className="mb-7 max-w-2xl text-sm leading-relaxed text-muted">
-        A selection of applications I have built. Open a project for its
-        technology stack, implementation highlights, challenges and future
-        plans.
-      </Reveal>
-      <label className="relative mb-4 block max-w-lg">
-        <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" aria-hidden="true" />
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search projects or technologies..."
-          aria-label="Search projects or technologies"
-          className="w-full rounded-full border border-brand/25 bg-ink-2 py-3 pl-11 pr-11 text-sm text-fg outline-none transition placeholder:text-muted focus:border-brand focus:ring-2 focus:ring-brand/20"
-        />
-        {query && (
-          <button type="button" onClick={() => setQuery('')} aria-label="Clear project search" className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted hover:text-fg">
-            <X size={16} />
-          </button>
-        )}
-      </label>
-      <div className="mb-7 flex flex-wrap gap-2" aria-label="Filter projects">
-        {cats.map(c => (
-          <button
-            key={c}
-            onClick={() => setCat(c)}
-            aria-pressed={cat === c}
-            className={`rounded-full border px-4 py-2 font-mono text-xs transition ${cat === c ? 'border-brand bg-brand text-ink-3' : 'border-brand/30 bg-ink-2 text-muted hover:border-brand hover:text-fg'}`}
+      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <Reveal className="max-w-2xl text-sm leading-relaxed text-muted">
+          A curated highlight of my featured applications. Open any project for its
+          technology stack, implementation highlights, challenges and future plans,
+          or browse the full archive on the projects page.
+        </Reveal>
+        <Reveal>
+          <Link
+            href="/projects"
+            className="btn-ghost shrink-0 font-mono !px-4 !py-2.5 !text-xs"
           >
-            {c}
-          </button>
-        ))}
+            All {allProjects.length} projects <ArrowRight size={15} />
+          </Link>
+        </Reveal>
       </div>
-      {shown.length === 0 ? (
+
+      {homeProjects.length === 0 ? (
         <div className="card border-dashed p-10 text-center text-sm text-muted">
-          No projects match that search. Try another name or technology.
+          No projects added yet. Add your first project from the admin dashboard.
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        <AnimatePresence mode="popLayout">
-          {shown.map((p, index) => (
-            <motion.article
-              key={p.slug}
-              layout
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 12 }}
-              transition={{ duration: 0.22, delay: index * 0.035 }}
-              className={`group card flex h-full flex-col overflow-hidden border-brand/15 transition hover:-translate-y-1 hover:border-brand/50 hover:shadow-glow ${index === 0 ? "lg:col-span-2" : ""}`}
-            >
-              <a
-                href={`/projects/${p.slug}`}
-                className="relative block overflow-hidden"
-                aria-label={`View ${p.title} project details`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={p.image}
-                  alt={`${p.title} project showcase`}
-                  className={`${index === 0 ? "h-56 sm:h-72" : "h-48"} w-full object-cover transition duration-500 group-hover:scale-[1.03]`}
-                />
-                {index === 0 && <span className="absolute right-4 top-4 rounded-full border border-brand/40 bg-brand px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-ink-3">Featured</span>}
-                <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/60 px-3 py-1 font-mono text-[11px] text-white backdrop-blur">
-                  {p.category}
-                </span>
-              </a>
-              <div className="flex flex-1 flex-col p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-lg font-semibold tracking-tight text-fg">
-                    {p.title}
-                  </h3>
-                  <Layers3
-                    size={17}
-                    className="mt-1 shrink-0 text-brand"
-                    aria-hidden="true"
-                  />
-                </div>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-muted">
-                  {p.description}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {p.technologies.slice(0, 4).map(t => (
-                    <span
-                      key={t}
-                      className="rounded-md border border-brand/20 bg-brand/[0.04] px-2 py-1 text-[11px] text-muted"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                  {p.technologies.length > 4 && (
-                    <span className="px-1 py-1 text-[11px] text-muted">
-                      +{p.technologies.length - 4}
-                    </span>
-                  )}
-                </div>
-                <div className="mt-5 flex items-center justify-between border-t border-brand/10 pt-4">
-                  <a
-                    href={`/projects/${p.slug}`}
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"
-                  >
-                    Project details <ArrowUpRight size={16} />
-                  </a>
-                  <div className="flex items-center gap-3">
-                    <a
-                      href={p.github}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={`GitHub repository for ${p.title}${isPlaceholderUrl(p.github) ? ' (placeholder link)' : ''}`}
-                      title={
-                        isPlaceholderUrl(p.github)
-                          ? 'Replace with your GitHub repository URL'
-                          : 'Open GitHub repository'
-                      }
-                      className="text-muted transition hover:text-brand"
-                    >
-                      <Github size={17} />
-                    </a>
-                    {p.live && (
-                      <a
-                        href={p.live}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`Live demo for ${p.title}`}
-                        title="Open live project"
-                        className="text-muted transition hover:text-brand"
-                      >
-                        <ExternalLink size={17} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.article>
+        <div className="grid gap-5 md:grid-cols-2">
+          {homeProjects.map((project, index) => (
+            <ProjectCard
+              key={project.id || project.slug}
+              project={project}
+              index={index}
+              showFeaturedBadge
+            />
           ))}
-        </AnimatePresence>
         </div>
+      )}
+
+      {allProjects.length > 0 && (
+        <Reveal className="mt-8">
+          <div className="card flex flex-col items-start justify-between gap-4 border-brand/25 bg-gradient-to-r from-brand/[0.06] via-ink-2 to-ink-2 p-6 sm:flex-row sm:items-center">
+            <div className="flex items-start gap-3.5">
+              <div className="rounded-xl border border-brand/30 bg-brand/10 p-2.5 text-brand">
+                <FolderKanban size={20} />
+              </div>
+              <div>
+                <p className="font-semibold text-fg">
+                  Want to explore all {allProjects.length} projects?
+                </p>
+                <p className="mt-0.5 text-sm text-muted">
+                  Search by technology, filter by category, and view every project I&apos;ve built.
+                </p>
+              </div>
+            </div>
+            <Link href="/projects" className="btn-primary shrink-0 font-mono">
+              View All Projects <ArrowRight size={16} />
+            </Link>
+          </div>
+        </Reveal>
       )}
     </Section>
   );
