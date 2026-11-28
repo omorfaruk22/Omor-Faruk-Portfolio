@@ -16,12 +16,11 @@ export default function ProjectCard({
 }) {
   return (
     <motion.article
-      layout
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 12 }}
-      transition={{ duration: 0.22, delay: Math.min(index * 0.035, 0.25) }}
-      className="group card flex h-full min-w-0 flex-col overflow-hidden border-brand/15 transition hover:-translate-y-1 hover:border-brand/50 hover:shadow-glow"
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ duration: 0.2, delay: Math.min(index * 0.03, 0.16), ease: [0.22, 1, 0.36, 1] }}
+      className="group card flex h-full min-w-0 flex-col overflow-hidden border-brand/15 transition-[border-color,transform] duration-200 hover:-translate-y-1 hover:border-brand/50"
     >
       <Link
         href={`/projects/${project.slug}`}
@@ -32,14 +31,16 @@ export default function ProjectCard({
         <img
           src={project.image}
           alt={`${project.title} project showcase`}
-          className="h-52 w-full object-cover transition duration-500 group-hover:scale-[1.03] sm:h-56"
+          loading="lazy"
+          decoding="async"
+          className="h-52 w-full object-cover transition-transform duration-300 will-change-transform group-hover:scale-[1.03] sm:h-56"
         />
         {showFeaturedBadge && project.featured && (
           <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full border border-brand/40 bg-brand px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-ink-3">
             <Star size={11} className="fill-current" /> Featured
           </span>
         )}
-        <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/65 px-3 py-1 font-mono text-[11px] text-white backdrop-blur">
+        <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/80 px-3 py-1 font-mono text-[11px] text-white">
           {project.category}
         </span>
       </Link>

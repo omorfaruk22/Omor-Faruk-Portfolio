@@ -9,8 +9,8 @@ export default function ScrollProgress() {
 
   return (
     <motion.div
-      className="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-brand shadow-glow"
-      style={{ scaleX: scrollYProgress }}
+      className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-brand will-change-transform"
+      style={{ scaleX: scrollYProgress, transform: "translateZ(0)" }}
       aria-hidden="true"
     />
   );

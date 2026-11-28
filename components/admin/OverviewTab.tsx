@@ -153,7 +153,11 @@ export default function OverviewTab({
       <div className="glass-card relative overflow-hidden border-brand/30 p-5 sm:p-7">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-brand/15 blur-3xl"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(34, 197, 94, 0.18) 0%, rgba(34, 197, 94, 0.04) 45%, transparent 70%)",
+          }}
+          className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full"
         />
         <div className="relative flex flex-col justify-between gap-5 md:flex-row md:items-center">
           <div className="flex min-w-0 items-center gap-4">
@@ -162,6 +166,7 @@ export default function OverviewTab({
               <img
                 src={data.profile.photo}
                 alt={data.profile.name}
+                decoding="async"
                 className="h-full w-full object-cover"
               />
             </div>
@@ -609,9 +614,11 @@ export default function OverviewTab({
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-                <span className="absolute left-2 top-2 rounded-md bg-black/75 px-2 py-0.5 font-mono text-[10px] font-semibold text-brand backdrop-blur">
+                <span className="absolute left-2 top-2 rounded-md bg-black/80 px-2 py-0.5 font-mono text-[10px] font-semibold text-brand">
                   Slot #{idx + 1}
                 </span>
                 {project.featured && (

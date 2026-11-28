@@ -14,7 +14,7 @@ const config: Config = {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
-      boxShadow: { glow: "0 0 0 1px rgba(34,197,94,.35), 0 0 40px -8px rgba(34,197,94,.4)" },
+      boxShadow: { glow: "0 0 0 1px rgba(34,197,94,.32), 0 8px 24px -8px rgba(34,197,94,.32)" },
     },
   },
   plugins: [],

@@ -322,14 +322,19 @@ export default function AdminShell({
 
   return (
     <div className="relative z-10 flex min-h-screen w-full max-w-full overflow-x-clip">
-      {/* Ambient Emerald Aurora */}
+      {/* Ambient Emerald Aurora (zero-cost radial gradient, no heavy CSS blur filter) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed -top-40 right-1/4 -z-10 h-96 w-96 rounded-full bg-brand/[0.08] blur-[130px]"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(34, 197, 94, 0.11) 0%, rgba(34, 197, 94, 0.03) 42%, transparent 70%)",
+          transform: "translateZ(0)",
+        }}
+        className="pointer-events-none fixed -top-36 right-[12%] -z-10 h-[440px] w-[440px] rounded-full"
       />
 
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 shrink-0 border-r border-brand/15 bg-ink-2/85 backdrop-blur-xl lg:sticky lg:top-0 lg:block lg:h-screen">
+      <aside className="hidden w-64 shrink-0 border-r border-brand/15 bg-ink-2/95 lg:sticky lg:top-0 lg:block lg:h-screen">
         {SidebarContent}
       </aside>
 
@@ -340,15 +345,16 @@ export default function AdminShell({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm lg:hidden"
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-50 bg-black/75 lg:hidden"
             onMouseDown={(e) => e.target === e.currentTarget && setSidebarOpen(false)}
           >
             <motion.aside
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
-              transition={{ type: "spring", stiffness: 360, damping: 34 }}
-              className="h-full w-72 max-w-[85vw] border-r border-brand/25 bg-ink-2 shadow-glow"
+              transition={{ type: "tween", duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="h-full w-72 max-w-[85vw] border-r border-brand/25 bg-ink-2 will-change-transform"
             >
               {SidebarContent}
             </motion.aside>
@@ -358,7 +364,10 @@ export default function AdminShell({
 
       {/* Main Content */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-2 border-b border-brand/15 bg-ink/85 px-3.5 backdrop-blur-xl sm:px-6">
+        <header
+          style={{ transform: "translateZ(0)" }}
+          className="sticky top-0 z-30 flex h-16 items-center justify-between gap-2 border-b border-brand/15 bg-ink/[0.97] px-3.5 sm:px-6 lg:bg-ink/90 lg:backdrop-blur-md"
+        >
           <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
             <button
               type="button"
@@ -448,15 +457,13 @@ export default function AdminShell({
             </div>
           )}
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18 }}
-              className="min-w-0"
-            >
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.14 }}
+            className="min-w-0"
+          >
               {activeTab === "overview" && (
                 <OverviewTab
                   data={data}
@@ -532,15 +539,15 @@ export default function AdminShell({
                   onNotify={notify}
                 />
               )}
-            </motion.div>
-          </AnimatePresence>
+          </motion.div>
         </main>
       </div>
 
-      {/* Mobile Native-Style Bottom Floating Dock */}
+      {/* Mobile Native-Style Bottom Floating Dock (GPU composited, zero mobile blur drag) */}
       <nav
         aria-label="Mobile quick navigation"
-        className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 gap-1 rounded-2xl border border-brand/25 bg-ink-2/90 p-1.5 shadow-glow backdrop-blur-xl lg:hidden"
+        style={{ transform: "translateZ(0)" }}
+        className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 gap-1 rounded-2xl border border-brand/30 bg-ink-2/[0.98] p-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.7)] lg:hidden"
       >
         {MOBILE_DOCK_TABS.map((tabId) => {
           const item = NAV_ITEMS.find((n) => n.id === tabId)!;

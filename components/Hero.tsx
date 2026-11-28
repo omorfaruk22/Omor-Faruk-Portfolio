@@ -22,12 +22,16 @@ export default function Hero() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-28 top-10 -z-10 h-72 w-72 rounded-full bg-brand/10 blur-3xl sm:h-96 sm:w-96"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(34, 197, 94, 0.14) 0%, rgba(34, 197, 94, 0.03) 45%, transparent 70%)",
+        }}
+        className="pointer-events-none absolute -right-24 top-6 -z-10 h-80 w-80 rounded-full sm:h-[420px] sm:w-[420px]"
       />
       <motion.div
-        initial={reduce ? false : { opacity: 0, y: 22 }}
+        initial={reduce ? false : { opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.65 }}
+        transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
         className="order-2 min-w-0 lg:order-1"
       >
         <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-brand/25 bg-ink-2/80 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
@@ -78,23 +82,28 @@ export default function Hero() {
       </motion.div>
 
       <motion.div
-        initial={reduce ? false : { opacity: 0, scale: 0.96 }}
+        initial={reduce ? false : { opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.7, delay: 0.1 }}
+        transition={{ duration: 0.42, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
         className="order-1 mx-auto w-full min-w-0 max-w-xl lg:order-2"
       >
         <div className="relative w-full min-w-0 overflow-hidden rounded-[1.5rem] border border-brand/20 bg-gradient-to-br from-brand/10 via-ink-2 to-ink p-3.5 shadow-glow sm:rounded-[2rem] sm:p-6">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -left-3 top-1/4 h-20 w-20 rounded-full bg-brand/20 blur-2xl"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(34, 197, 94, 0.22) 0%, transparent 70%)",
+            }}
+            className="pointer-events-none absolute -left-6 top-1/4 h-28 w-28 rounded-full"
           />
-          <div className="relative flex items-center justify-between gap-3 rounded-2xl border border-brand/15 bg-ink/80 p-3.5 sm:p-5">
+          <div className="relative flex items-center justify-between gap-3 rounded-2xl border border-brand/15 bg-ink/85 p-3.5 sm:p-5">
             <div className="flex min-w-0 items-center gap-3 sm:gap-4">
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-brand/35 shadow-glow sm:h-20 sm:w-20">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={profile.photo}
                   alt={`${profile.name} — profile photo`}
+                  decoding="async"
                   className="h-full w-full object-cover"
                 />
               </div>

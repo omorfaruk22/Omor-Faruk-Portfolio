@@ -210,7 +210,7 @@ export default function CommandPalette({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[130] flex items-start justify-center bg-black/75 p-4 pt-[10vh] backdrop-blur-md"
+          className="fixed inset-0 z-[130] flex items-start justify-center bg-black/80 p-4 pt-[10vh] lg:backdrop-blur-sm"
           onMouseDown={(e) => e.target === e.currentTarget && onClose()}
           role="dialog"
           aria-modal="true"

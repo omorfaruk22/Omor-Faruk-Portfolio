@@ -43,12 +43,12 @@ export function ToastViewport({
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className={`pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-glow backdrop-blur ${
+          className={`pointer-events-auto flex items-start gap-3 rounded-xl border px-4 py-3 text-sm shadow-glow ${
             toast.type === "error"
-              ? "border-red-500/40 bg-ink-2/95 text-red-200"
+              ? "border-red-500/40 bg-ink-2/[0.98] text-red-200"
               : toast.type === "info"
-                ? "border-brand/30 bg-ink-2/95 text-fg"
-                : "border-brand/50 bg-ink-2/95 text-fg"
+                ? "border-brand/30 bg-ink-2/[0.98] text-fg"
+                : "border-brand/50 bg-ink-2/[0.98] text-fg"
           }`}
         >
           {toast.type === "error" ? (
@@ -93,7 +93,7 @@ export function ConfirmModal({
   if (!open) return null;
   return (
     <div
-      className="fixed inset-0 z-[110] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 p-4 lg:backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       onMouseDown={(e) => e.target === e.currentTarget && !busy && onCancel()}

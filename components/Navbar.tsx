@@ -23,7 +23,10 @@ export default function Navbar() {
   const { profile } = data;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-brand/10 bg-ink/85 backdrop-blur-md">
+    <header
+      style={{ transform: "translateZ(0)" }}
+      className="sticky top-0 z-50 w-full border-b border-brand/10 bg-ink/[0.97] lg:bg-ink/88 lg:backdrop-blur-md"
+    >
       <nav
         className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-3.5 sm:px-5 md:px-8"
         aria-label="Main"
@@ -75,7 +78,7 @@ export default function Navbar() {
         </div>
       </nav>
       {open && (
-        <div className="border-t border-brand/10 bg-ink/95 px-4 pb-5 pt-2 backdrop-blur-md lg:hidden">
+        <div className="border-t border-brand/10 bg-ink/[0.98] px-4 pb-5 pt-2 lg:hidden">
           <div className="flex flex-col">
             {links.map((l) => {
               const isProjectsActive = l.href === "/projects" && pathname.startsWith("/projects");

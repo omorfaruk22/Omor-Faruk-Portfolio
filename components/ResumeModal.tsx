@@ -32,7 +32,7 @@ export default function ResumeModal() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/80 p-3 backdrop-blur-sm sm:p-6"
+          className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto bg-black/80 p-3 sm:p-6 lg:backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-label="Resume"

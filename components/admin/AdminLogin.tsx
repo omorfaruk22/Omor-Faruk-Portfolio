@@ -60,7 +60,11 @@ export default function AdminLogin({
     <div className="relative z-10 flex min-h-screen flex-col items-center justify-center overflow-x-clip px-4 py-10 sm:px-5">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/3 -z-10 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-[110px]"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(34, 197, 94, 0.16) 0%, rgba(34, 197, 94, 0.04) 45%, transparent 70%)",
+        }}
+        className="pointer-events-none absolute left-1/2 top-1/3 -z-10 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full"
       />
 
       <motion.div

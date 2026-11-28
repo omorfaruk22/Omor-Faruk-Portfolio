@@ -570,7 +570,7 @@ export default function ProjectsTab({
                         <Star size={10} className="fill-current" /> Featured
                       </span>
                     )}
-                    <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/65 px-2.5 py-0.5 font-mono text-[10px] text-white backdrop-blur">
+                    <span className="absolute left-3 top-3 rounded-full border border-white/15 bg-black/80 px-2.5 py-0.5 font-mono text-[10px] text-white">
                       {editing.category || "Category"}
                     </span>
                   </div>
@@ -727,6 +727,8 @@ export default function ProjectsTab({
                   <img
                     src={project.image}
                     alt={project.title}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover"
                   />
                   {slot && (
@@ -734,7 +736,7 @@ export default function ProjectsTab({
                       HOME #{slot}
                     </span>
                   )}
-                  <span className="absolute right-2.5 top-2.5 rounded-md bg-black/70 px-2 py-0.5 font-mono text-[10px] text-white backdrop-blur">
+                  <span className="absolute right-2.5 top-2.5 rounded-md bg-black/80 px-2 py-0.5 font-mono text-[10px] text-white">
                     {project.category}
                   </span>
                 </div>
@@ -806,6 +808,8 @@ export default function ProjectsTab({
                   <img
                     src={project.image}
                     alt={project.title}
+                    loading="lazy"
+                    decoding="async"
                     className="h-full w-full object-cover"
                   />
                   {slot && (

@@ -14,6 +14,7 @@ export default function Section({
   return (
     <section
       id={id}
+      style={{ contain: "layout style" }}
       className="mx-auto w-full max-w-6xl overflow-x-clip px-4 py-12 sm:px-5 md:px-8 md:py-24"
     >
       <Reveal className="mb-7 flex flex-wrap items-center gap-3 md:mb-8">
