@@ -1,5 +1,7 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import CinematicSplash from "./CinematicSplash";
 import type { AvailabilityOption, PortfolioData } from "@/types/portfolio";
 
 type Ctx = {
@@ -34,13 +36,29 @@ export default function Providers({
   initialData: PortfolioData;
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isAdminRoute = pathname?.startsWith("/admin");
+
   const [data, setData] = useState<PortfolioData>(initialData);
   const [resumeOpen, setResumeOpen] = useState(false);
+  // Plays once on every fresh visit or browser refresh of the public portfolio (skips /admin)
+  const [showIntro, setShowIntro] = useState(!isAdminRoute);
 
   // Sync if server sends refreshed initialData (e.g., after router.refresh())
   useEffect(() => {
     setData(initialData);
   }, [initialData]);
+
+  // If user navigates to /admin mid-intro, dismiss portfolio intro immediately
+  useEffect(() => {
+    if (isAdminRoute && showIntro) {
+      setShowIntro(false);
+    }
+  }, [isAdminRoute, showIntro]);
+
+  const handleIntroComplete = useCallback(() => {
+    setShowIntro(false);
+  }, []);
 
   const refreshData = useCallback(async () => {
     try {
@@ -72,6 +90,14 @@ export default function Providers({
         setResumeOpen,
       }}
     >
+      <CinematicSplash
+        active={showIntro}
+        mode="portfolio"
+        brandName={data.profile.name}
+        subtitle={data.profile.title}
+        durationMs={2000}
+        onComplete={handleIntroComplete}
+      />
       {children}
     </AppCtx.Provider>
   );

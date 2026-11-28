@@ -387,9 +387,9 @@ export default function AdminShell({
 
       {/* Desktop Sidebar */}
       <motion.aside
-        initial={animateEntrance && !reduceMotion ? { opacity: 0, x: -24 } : false}
+        initial={animateEntrance && !reduceMotion ? { opacity: 0, x: -28 } : false}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.65, delay: 1.4, ease: [0.22, 1, 0.36, 1] }}
         className="hidden w-64 shrink-0 border-r border-brand/15 bg-ink-2/95 lg:sticky lg:top-0 lg:block lg:h-screen"
       >
         <LayoutGroup id="desktop-sidebar">{SidebarContent}</LayoutGroup>
@@ -422,9 +422,9 @@ export default function AdminShell({
       {/* Main Content */}
       <div className="flex min-w-0 flex-1 flex-col">
         <motion.header
-          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: -16 } : false}
+          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: -18 } : false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.34, delay: 0.04, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.58, delay: 1.44, ease: [0.22, 1, 0.36, 1] }}
           className="sticky top-0 z-30 flex h-16 items-center justify-between gap-2 border-b border-brand/15 bg-ink/[0.97] px-3.5 sm:px-6 lg:bg-ink/90 lg:backdrop-blur-md"
         >
           <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
@@ -508,9 +508,9 @@ export default function AdminShell({
         </motion.header>
 
         <motion.main
-          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: 24, scale: 0.985 } : false}
+          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: 28, scale: 0.982 } : false}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.44, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.65, delay: 1.48, ease: [0.22, 1, 0.36, 1] }}
           className="mx-auto w-full max-w-5xl flex-1 px-3.5 pb-24 pt-5 sm:p-6 lg:p-8 lg:pb-12"
         >
           {usingDefaultPassword && activeTab !== "settings" && (
@@ -632,9 +632,9 @@ export default function AdminShell({
       <LayoutGroup id="mobile-bottom-dock">
         <motion.nav
           aria-label="Mobile quick navigation"
-          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: 52 } : false}
+          initial={animateEntrance && !reduceMotion ? { opacity: 0, y: 56 } : false}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 360, damping: 28, delay: 0.14 }}
+          transition={{ type: "spring", stiffness: 320, damping: 28, delay: 1.54 }}
           className="fixed inset-x-3 bottom-3 z-40 grid grid-cols-5 gap-1 rounded-2xl border border-brand/30 bg-ink-2/[0.98] p-1.5 shadow-[0_10px_28px_rgba(0,0,0,0.75)] lg:hidden"
         >
           {MOBILE_DOCK_TABS.map((tabId) => {

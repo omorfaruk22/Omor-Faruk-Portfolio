@@ -53,6 +53,32 @@ a, button {
 .cursor { display: inline-block; width: 8px; height: 1.05em; background: #22C55E; vertical-align: -2px; animation: blink 1s steps(1) infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
+@keyframes border-beam-spin {
+  0% { transform: rotate(0deg) translateZ(0); }
+  100% { transform: rotate(360deg) translateZ(0); }
+}
+
+.running-border-beam {
+  position: absolute;
+  inset: -120%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 245deg,
+    rgba(34, 197, 94, 0.22) 292deg,
+    rgba(34, 197, 94, 0.88) 338deg,
+    #4ADE80 354deg,
+    transparent 360deg
+  );
+  animation: border-beam-spin 3.4s linear infinite;
+  will-change: transform;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .running-border-beam { animation: none; }
+}
+
 .spark {
   position: absolute;
   width: 6px;

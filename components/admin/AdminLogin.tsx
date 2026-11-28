@@ -79,32 +79,35 @@ export default function AdminLogin({
           </span>
         </div>
 
-        <div
-          style={{
-            background:
-              "linear-gradient(165deg, rgba(13, 25, 15, 0.97) 0%, rgba(7, 14, 8, 0.99) 100%)",
-          }}
-          className="group overflow-hidden rounded-2xl border border-brand/25 shadow-none transition-[transform,box-shadow,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:-translate-y-2.5 hover:scale-[1.02] hover:border-brand/80 hover:shadow-[0_0_50px_6px_rgba(34,197,94,0.45),0_0_24px_0_rgba(34,197,94,0.28)] focus-within:-translate-y-2 focus-within:scale-[1.015] focus-within:border-brand/75 focus-within:shadow-[0_0_50px_4px_rgba(34,197,94,0.4),0_0_20px_0_rgba(34,197,94,0.24)]"
-        >
-          <div className="flex items-center justify-between gap-2 border-b border-brand/15 bg-black/45 px-4 py-3 font-mono text-xs text-muted">
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-red-500/75" />
-              <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/75" />
-              <span className="h-2.5 w-2.5 rounded-full bg-green-500/75" />
-              <span className="ml-2 flex items-center gap-1.5 text-fg">
-                <Terminal size={13} className="text-brand" /> admin@omor: ~/auth
-              </span>
-            </div>
-            <span className="rounded border border-brand/25 bg-brand/10 px-1.5 py-0.5 text-[10px] text-brand">
-              HMAC-SHA256
-            </span>
-          </div>
-
-          <div className="p-6 sm:p-8">
-            <div className="flex items-center gap-3.5">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-brand/40 bg-gradient-to-br from-brand/25 to-brand/5 text-brand transition-shadow duration-300 group-hover:shadow-[0_0_24px_rgba(34,197,94,0.45)]">
-                <ShieldCheck size={24} />
+        <div className="group relative rounded-2xl shadow-none transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:-translate-y-2.5 hover:scale-[1.02] hover:shadow-[0_0_50px_6px_rgba(34,197,94,0.45),0_0_24px_0_rgba(34,197,94,0.28)] focus-within:-translate-y-2 focus-within:scale-[1.015] focus-within:shadow-[0_0_50px_4px_rgba(34,197,94,0.4),0_0_20px_0_rgba(34,197,94,0.24)]">
+          {/* Continuously running green square border line */}
+          <div className="relative overflow-hidden rounded-2xl border border-brand/20 p-[2px] transition-colors duration-300 group-hover:border-brand/70 group-focus-within:border-brand/65">
+            <div className="running-border-beam" aria-hidden="true" />
+            <div
+              style={{
+                background: "linear-gradient(165deg, #0d190f 0%, #070e08 100%)",
+              }}
+              className="relative z-10 overflow-hidden rounded-[14px]"
+            >
+              <div className="flex items-center justify-between gap-2 border-b border-brand/15 bg-black/45 px-4 py-3 font-mono text-xs text-muted">
+                <div className="flex items-center gap-2">
+                  <span className="h-2.5 w-2.5 rounded-full bg-red-500/75" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-yellow-500/75" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-green-500/75" />
+                  <span className="ml-2 flex items-center gap-1.5 text-fg">
+                    <Terminal size={13} className="text-brand" /> admin@omor: ~/auth
+                  </span>
+                </div>
+                <span className="rounded border border-brand/25 bg-brand/10 px-1.5 py-0.5 text-[10px] text-brand">
+                  HMAC-SHA256
+                </span>
               </div>
+
+              <div className="p-6 sm:p-8">
+                <div className="flex items-center gap-3.5">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-brand/40 bg-gradient-to-br from-brand/25 to-brand/5 text-brand transition-shadow duration-300 group-hover:shadow-[0_0_24px_rgba(34,197,94,0.45)]">
+                    <ShieldCheck size={24} />
+                  </div>
               <div className="min-w-0">
                 <h1 className="text-xl font-extrabold tracking-tight text-fg">
                   Portfolio Command Center
@@ -202,6 +205,8 @@ export default function AdminLogin({
                 </p>
               </div>
             )}
+              </div>
+            </div>
           </div>
         </div>
       </motion.div>

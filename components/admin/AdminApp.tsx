@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import CinematicSplash from "@/components/CinematicSplash";
 import AdminLogin from "./AdminLogin";
 import AdminShell from "./AdminShell";
 import { adminFetch, getStoredToken } from "./api";
@@ -24,6 +25,7 @@ export default function AdminApp({
   const reduceMotion = useReducedMotion();
   const [authenticated, setAuthenticated] = useState(initialAuthenticated);
   const [justLoggedIn, setJustLoggedIn] = useState(false);
+  const [showUnlockSplash, setShowUnlockSplash] = useState(false);
   const [user, setUser] = useState(initialUser ?? defaultEmail);
   const [usingDefaultPassword, setUsingDefaultPassword] = useState(initialUsingDefaultPassword);
   const [data, setData] = useState<PortfolioData>(initialData);
@@ -50,57 +52,74 @@ export default function AdminApp({
   const handleLoginSuccess = async (loggedInUser: string, usingDefault: boolean) => {
     setUser(loggedInUser);
     setUsingDefaultPassword(usingDefault);
+    setShowUnlockSplash(true);
+    setJustLoggedIn(true);
     try {
       const fresh = await adminFetch<PortfolioData>("/api/portfolio");
       setData(fresh);
     } catch {
       // use initialData fallback
     }
-    setJustLoggedIn(true);
     setAuthenticated(true);
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     }
   };
 
+  const handleSplashComplete = useCallback(() => {
+    setShowUnlockSplash(false);
+  }, []);
+
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      {!authenticated ? (
-        <motion.div
-          key="admin-login-view"
-          initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={reduceMotion ? undefined : { opacity: 0, y: -18, scale: 0.95 }}
-          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <AdminLogin
-            defaultEmail={defaultEmail}
-            usingDefaultPassword={usingDefaultPassword}
-            onSuccess={handleLoginSuccess}
-          />
-        </motion.div>
-      ) : (
-        <motion.div
-          key="admin-dashboard-view"
-          initial={reduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={reduceMotion ? undefined : { opacity: 0 }}
-          transition={{ duration: 0.24, ease: "easeOut" }}
-        >
-          <AdminShell
-            initialData={data}
-            userEmail={user}
-            storageBackend={storageBackend}
-            usingDefaultPassword={usingDefaultPassword}
-            animateEntrance={justLoggedIn}
-            onPasswordChanged={() => setUsingDefaultPassword(false)}
-            onLogout={() => {
-              setJustLoggedIn(false);
-              setAuthenticated(false);
-            }}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <>
+      <CinematicSplash
+        active={showUnlockSplash}
+        mode="admin"
+        brandName={data.profile.name}
+        subtitle={`Welcome back, ${data.profile.name.split(" ")[0]}`}
+        durationMs={2000}
+        onComplete={handleSplashComplete}
+      />
+
+      <AnimatePresence mode="wait" initial={false}>
+        {!authenticated ? (
+          <motion.div
+            key="admin-login-view"
+            initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -16, scale: 0.96 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <AdminLogin
+              defaultEmail={defaultEmail}
+              usingDefaultPassword={usingDefaultPassword}
+              onSuccess={handleLoginSuccess}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="admin-dashboard-view"
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            <AdminShell
+              initialData={data}
+              userEmail={user}
+              storageBackend={storageBackend}
+              usingDefaultPassword={usingDefaultPassword}
+              animateEntrance={justLoggedIn}
+              onPasswordChanged={() => setUsingDefaultPassword(false)}
+              onLogout={() => {
+                setJustLoggedIn(false);
+                setShowUnlockSplash(false);
+                setAuthenticated(false);
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
